@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
-import { FaGithub, FaLinkedin } from "react-icons/fa"; // For icons
+import { FaGithub, FaLinkedin } from "react-icons/fa";
 
 export default function UserProfile() {
   const router = useRouter();

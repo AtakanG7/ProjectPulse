@@ -10,21 +10,23 @@ import ProfileCreation from './components/ProfileCreation';
 import Leaderboard from './components/Leaderboard';
 import CTASection from './components/CTASection';
 import ProjectCheckSection from "./components/ProjectCheck";
+import Footer from "./components/Footer";
 export default function Home() {
   const { data: session } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen text-white" style={{ backgroundColor: "#111827 !important" }}>
       <Header isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
       <HeroSection />
       <ProjectCheckSection />
-      <main className="container mx-auto px-6 py-12">
+      <main className="container mx-auto py-12">
         <SearchSection />
         {!session?.user?.username && session && <ProfileCreation />}
         <Leaderboard />
       </main>
       <CTASection />
+      <Footer />
       <ToastContainer />
     </div>
   );
