@@ -1,30 +1,68 @@
+import React from 'react';
 import { useSession, signIn } from "next-auth/react";
+import { Github, MessageCircle, ChevronRight } from "lucide-react";
 
-export default function HeroSection() {
+const HeroSection = () => {
   const { data: session } = useSession();
 
   return (
-    <section className="bg-gradient-to-r from-blue-500 to-teal-600 text-white py-20 text-center">
-      <div className="container mx-auto px-6">
-        <h2 className="text-4xl font-extrabold mb-4">
+    <section className="relative bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white py-24 min-h-screen flex items-center overflow-hidden">
+      <div 
+        className="absolute inset-0 bg-cover bg-center opacity-5 animate-pulse"
+        style={{backgroundImage: 'url(/img/landing.jpg)'}}
+      />
+      <div className="container mx-auto px-6 relative z-10 text-center">
+        <h2 className="text-5xl md:text-6xl font-extrabold mb-6 tracking-tight leading-tight text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
           Showcase Your Projects to the World
         </h2>
-        <p className="text-xl mb-8">
+        
+        <p className="text-lg md:text-xl mb-12 max-w-3xl mx-auto text-gray-400 leading-relaxed">
           Join our vibrant community of innovators and creators. Share your work, get inspired, and climb the ranks!
         </p>
+
         {session ? (
-          <p className="text-2xl font-semibold mb-4">
-            Welcome back, {session.user.name}!
+          <p className="text-3xl md:text-4xl font-semibold mb-8">
+            Welcome back, <span className="text-purple-400">{session.user.name}</span>!
           </p>
         ) : (
           <button
             onClick={() => signIn()}
-            className="bg-white text-blue-600 px-8 py-3 rounded-full text-lg font-semibold hover:bg-blue-100 transition-colors"
+            className="group bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-full text-lg md:text-xl font-bold hover:from-purple-500 hover:to-pink-500 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
           >
             Get Started - It's Free!
+            <ChevronRight className="inline-block ml-2 transform group-hover:translate-x-1 transition-transform" />
           </button>
         )}
+
+        <div className="flex flex-col md:flex-row justify-center items-stretch space-y-8 md:space-y-0 md:space-x-8 mt-20 max-w-4xl mx-auto">
+          <Card
+            icon={<Github className="w-10 h-10 text-white" />}
+            title="Collaborate Effortlessly"
+            description="Work together with teams across the globe, share insights, and build amazing things faster."
+          />
+          <Card
+            icon={<MessageCircle className="w-10 h-10 text-white" />}
+            title="Engage & Network"
+            description="Connect with like-minded creators and entrepreneurs. Build your network and find new opportunities."
+          />
+        </div>
+
+        <p className="text-xs text-gray-500 mt-24 font-medium tracking-wider uppercase">
+          Trusted by Teams Around the World
+        </p>
       </div>
     </section>
   );
-}
+};
+
+const Card = ({ icon, title, description }) => (
+  <div className="bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-lg p-8 rounded-2xl text-center w-full max-w-sm mx-auto flex flex-col items-center shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-700">
+    <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full mb-6 flex items-center justify-center shadow-lg">
+      {icon}
+    </div>
+    <h3 className="text-2xl font-bold mb-4 text-purple-300">{title}</h3>
+    <p className="text-gray-400 mb-4 text-sm">{description}</p>
+  </div>
+);
+
+export default HeroSection;

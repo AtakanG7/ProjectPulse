@@ -1,11 +1,25 @@
 import dbConnect from "../../../utils/dbConnect";
 import Project from "../../../models/Project";
-import User from "../../../models/User";
 
 export default async function handler(req, res) {
   await dbConnect();
 
-  if (req.method === "POST") {
+  if (req.method === "GET") {
+    const { query } = req.query;
+
+    try {
+      const projects = await Project.find({
+        $or: [
+          { title: new RegExp(query, "i") },
+          { description: new RegExp(query, "i") },
+        ],
+      }).populate("createdBy", "username profilePicture");
+
+      res.status(200).json({ data: projects });
+    } catch (error) {
+      res.status(400).json({ error: "Error fetching projects" });
+    }
+  } else if (req.method === "POST") {
     const { title, description, userId } = req.body;
 
     if (!title || !description || !userId) {
@@ -29,3 +43,4 @@ export default async function handler(req, res) {
     res.status(405).end(); // Method Not Allowed
   }
 }
+

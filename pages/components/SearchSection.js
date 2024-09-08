@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { Search } from 'lucide-react';
+import { Search, Loader, User } from 'lucide-react';
 import { toast } from "react-toastify";
 import { debounce } from 'lodash';
 import Link from 'next/link';
@@ -54,67 +54,98 @@ const SearchSection = () => {
   };
 
   return (
-    <section className="max-w-2xl mx-auto p-4">
-      <div className="flex items-center bg-white border border-gray-200 rounded-full shadow-sm hover:shadow-md transition-shadow duration-300 ease-in-out focus-within:shadow-md">
-        <input
-          type="text"
-          placeholder="Search for users or projects"
-          value={searchQuery}
-          onChange={handleInputChange}
-          onKeyPress={handleKeyPress}
-          className="flex-grow px-6 py-3 bg-transparent border-none focus:outline-none text-gray-700 placeholder-gray-400 rounded-full"
-        />
-        <button
-          onClick={() => handleSearchUsers(searchQuery)}
-          className={`bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 transition-all duration-300 ease-in-out flex items-center justify-center ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
-          disabled={isLoading}
-        >
-          <Search size={20} className={`transition-transform duration-300 ease-in-out ${isLoading ? 'animate-spin' : ''}`} />
-        </button>
-      </div>
-      <div className="mt-6">
-        {isLoading && (
-          <p className="text-center text-gray-500 animate-pulse">Searching...</p>
-        )}
-        {!isLoading && searchResults.length > 0 && (
-          <div className="space-y-4">
-            <h3 className="text-xl font-semibold text-gray-700">Search Results:</h3>
-            <ul className="space-y-3">
-              {searchResults.map((result) => (
-                <li 
-                  key={result._id.$oid} 
-                  className="bg-white px-6 py-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 ease-in-out flex items-center space-x-4"
-                >
-                  <div className="flex-shrink-0">
-                    <div className="bg-blue-500 text-white w-12 h-12 rounded-full flex items-center justify-center font-bold">
-                      {result.username[0]}
-                    </div>
-                  </div>
-                  <div>
-                    {result.username ? (
-                      <Link 
-                        href={`/users/${result.username}`}  
-                        passHref
-                      >
-                        <span className="text-lg font-semibold text-blue-600 hover:underline cursor-pointer">
-                          {result.name}
-                        </span>
-                      </Link>
-                    ) : (
-                      <h4 className="text-lg font-semibold text-gray-800">{result.name}</h4>
-                    )}
-                    <p className="text-sm text-gray-500">{result.email}</p>
-                    <p className="text-sm text-gray-500">Username: {result.username || 'N/A'}</p>
-                    <p className="text-sm text-gray-500">Projects: {result.projects.length}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
+    <section className="relative from-gray-900 via-black to-gray-800 text-white py-20 rounded-3xl shadow-lg">
+      {/* Background Overlay */}
+      <div className="absolute inset-0 bg-black opacity-30 -z-10" />
+      
+      <div className="container mx-auto px-6 relative z-10">
+        <h2 className="text-3xl font-bold mb-8 text-center bg-gradient-to-r from-purple-400 to-pink-500 text-transparent bg-clip-text">
+          Discover Amazing Projects and Creators
+        </h2>
+
+        {/* Search Bar */}
+        <div className="relative mb-10">
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <Search className="h-6 w-6 text-purple-400" />
           </div>
-        )}
-        {!isLoading && searchQuery && searchResults.length === 0 && (
-          <p className="text-center text-gray-500 mt-4">No results found.</p>
-        )}
+          <input
+            type="text"
+            placeholder="Search for users or projects"
+            value={searchQuery}
+            onChange={handleInputChange}
+            onKeyPress={handleKeyPress}
+            className="block w-full pl-14 pr-20 py-5 bg-gray-800 border-2 border-purple-500 rounded-full focus:ring-4 focus:ring-purple-400 focus:border-transparent text-gray-100 placeholder-gray-400 text-lg shadow-inner transition duration-300 ease-in-out"
+          />
+          <button
+            onClick={() => handleSearchUsers(searchQuery)}
+            className="absolute inset-y-2 right-2 flex items-center px-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-full transition duration-300 ease-in-out shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <Loader className="h-6 w-6 animate-spin" />
+            ) : (
+              <span className="font-semibold">Search</span>
+            )}
+          </button>
+        </div>
+
+        {/* Search Results */}
+        <div className="mt-10">
+          {isLoading && (
+            <div className="flex justify-center items-center space-x-3">
+              <Loader className="h-8 w-8 text-purple-500 animate-spin" />
+              <p className="text-gray-300 font-medium text-xl">Searching the universe...</p>
+            </div>
+          )}
+          {!isLoading && searchResults.length > 0 && (
+            <div className="space-y-8">
+              <h3 className="text-2xl font-bold text-purple-300">Discover These Creators:</h3>
+              <ul className="space-y-6">
+                {searchResults.map((result) => (
+                  <li
+                    key={result._id.$oid}
+                    className="bg-gray-800 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 ease-in-out overflow-hidden border border-purple-500 hover:border-pink-500 transform hover:-translate-y-1"
+                  >
+                    <div className="p-6 flex items-center space-x-6">
+                      <div className="flex-shrink-0">
+                        <div className="bg-gradient-to-br from-purple-500 to-pink-600 text-white w-16 h-16 rounded-full flex items-center justify-center font-bold text-2xl shadow-inner">
+                          {result.username ? result.username[0].toUpperCase() : <User size={32} />}
+                        </div>
+                      </div>
+                      <div className="flex-grow">
+                        {result.username ? (
+                          <Link href={`/users/${result.username}`} passHref>
+                            <span className="text-xl font-semibold text-purple-300 hover:text-pink-400 cursor-pointer transition duration-150 ease-in-out">
+                              {result.name}
+                            </span>
+                          </Link>
+                        ) : (
+                          <h4 className="text-xl font-semibold text-gray-300">{result.name}</h4>
+                        )}
+                        <p className="text-sm text-gray-400 mt-1">{result.email}</p>
+                        <div className="mt-3 flex items-center space-x-3">
+                          <span className="px-3 py-1 bg-gray-700 text-gray-300 text-sm font-medium rounded-full">
+                            @{result.username || 'N/A'}
+                          </span>
+                          <span className="px-3 py-1 bg-purple-200 text-purple-700 text-sm font-medium rounded-full">
+                            {result.projects.length} {result.projects.length === 1 ? 'Project' : 'Projects'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {!isLoading && searchQuery && searchResults.length === 0 && (
+            <div className="text-center py-12 bg-gray-800 rounded-2xl border-2 border-dashed border-gray-600">
+              <Search className="mx-auto h-16 w-16 text-gray-500 mb-4" />
+              <p className="text-gray-300 font-semibold text-xl mb-2">No results found.</p>
+              <p className="text-gray-400 text-lg">Try adjusting your search terms or explore different keywords.</p>
+            </div>
+          )}
+        </div>
       </div>
     </section>
   );
