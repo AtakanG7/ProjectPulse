@@ -3,9 +3,10 @@
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
   "/": "pages/index.js",
-  "/api/leaderboard": "pages/api/leaderboard.js",
-  "/api/auth/[...nextauth]": "pages/api/auth/[...nextauth].js",
   "/users/[username]": "pages/users/[username].js",
+  "/api/auth/[...nextauth]": "pages/api/auth/[...nextauth].js",
+  "/api/leaderboard": "pages/api/leaderboard.js",
+  "/api/users/search": "pages/api/users/search.js",
   "/api/users/[username]": "pages/api/users/[username].js",
-  "/api/users/search": "pages/api/users/search.js"
+  "/api/projects": "pages/api/projects.js"
 }

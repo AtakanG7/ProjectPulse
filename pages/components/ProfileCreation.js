@@ -6,7 +6,8 @@ export default function ProfileCreation() {
   const { data: session } = useSession();
   const [username, setUsername] = useState("");
 
-  const handleCreateProfile = async () => {
+  const handleCreateProfile = async (event) => {
+    event.preventDefault();
     if (!username) return toast.warn("Please enter a username");
     const response = await fetch("/api/users", {
       method: "POST",

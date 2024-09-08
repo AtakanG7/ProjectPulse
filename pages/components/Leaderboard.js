@@ -13,15 +13,15 @@ export default function Leaderboard() {
   }, []);
 
   return (
-    <section>
+    <section className="p-6">
       <h2 className="text-3xl font-bold mb-6 text-blue-600 flex items-center">
         <Award className="mr-2" size={28} />
         Project Leaderboard
       </h2>
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {leaderboard.map((project, index) => (
-          <div key={project._id} className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg border border-blue-100">
-            <div className="flex items-center justify-between mb-2">
+          <div key={project._id} className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg border border-blue-100 transition-shadow duration-300 ease-in-out">
+            <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-semibold text-blue-600">{project.title}</h3>
               <span className="text-2xl font-bold text-blue-500">#{index + 1}</span>
             </div>

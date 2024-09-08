@@ -7,15 +7,25 @@ export default function Header({ isMenuOpen, setIsMenuOpen }) {
   return (
     <header className="bg-blue-600 text-white shadow-md">
       <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-        <h1 className="text-3xl font-bold">ProjectPulse</h1>
-        <nav className="hidden md:flex space-x-6 items-center">
-          <a href="#" className="hover:text-blue-300 transition-colors">Home</a>
-          <a href="#" className="hover:text-blue-300 transition-colors">Explore</a>
-          <a href="#" className="hover:text-blue-300 transition-colors">About</a>
+        {/* Logo and App Name */}
+        <div className="flex items-center space-x-2">
+          <img src="/img/logo.png" alt="App Logo" className="w-8 h-8" />
+          <h1 className="text-3xl font-bold">Projection</h1>
+        </div>
+
+        {/* User Profile or Sign-In Button */}
+        <nav className="flex space-x-6 items-center">
           {session ? (
             <div className="flex items-center space-x-4">
-              <img src={session.user.image} alt={session.user.name} className="w-10 h-10 rounded-full" />
-              <button onClick={() => signOut()} className="flex items-center hover:text-blue-300 transition-colors">
+              <img
+                src={session.user.image}
+                alt={session.user.name}
+                className="w-10 h-10 rounded-full"
+              />
+              <button
+                onClick={() => signOut()}
+                className="flex items-center hover:text-blue-300 transition-colors"
+              >
                 <LogOut className="mr-1" size={16} />
                 Sign Out
               </button>
@@ -29,19 +39,23 @@ export default function Header({ isMenuOpen, setIsMenuOpen }) {
             </button>
           )}
         </nav>
+
+        {/* Mobile Menu Toggle Button */}
         <button className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
           <Menu size={24} />
         </button>
       </div>
+
+      {/* Mobile Menu */}
       {isMenuOpen && (
         <nav className="bg-blue-600 text-white md:hidden">
-          <a href="#" className="block px-6 py-2 hover:text-blue-300 transition-colors">Home</a>
-          <a href="#" className="block px-6 py-2 hover:text-blue-300 transition-colors">Explore</a>
-          <a href="#" className="block px-6 py-2 hover:text-blue-300 transition-colors">About</a>
           {session ? (
             <div className="flex flex-col items-start px-6 py-2">
               <span>{session.user.name}</span>
-              <button onClick={() => signOut()} className="flex items-center hover:text-blue-300 transition-colors">
+              <button
+                onClick={() => signOut()}
+                className="flex items-center hover:text-blue-300 transition-colors"
+              >
                 <LogOut className="mr-1" size={16} />
                 Sign Out
               </button>
