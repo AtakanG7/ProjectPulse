@@ -1,15 +1,10 @@
 import NextAuth from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 import mongoose from "mongoose";
 import User from "../../../models/User";
 
 export default NextAuth({
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    }),
     GitHubProvider({
       clientId: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
@@ -32,11 +27,9 @@ export default NextAuth({
           const dbUser = await User.findOne({ email: session.user.email }).populate("projects");
 
           if (dbUser) {
-            // Attach user data to session
             session.user.id = dbUser._id.toString();
             session.user.username = dbUser.username;
-            session.user.projects = dbUser.projects; // Attach the user's projects
-            console.log(session)
+            session.user.projects = dbUser.projects;
           }
         } catch (error) {
           console.error("Error fetching user data:", error);
