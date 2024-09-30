@@ -1,8 +1,9 @@
+'use client';
 import React, { useState, useRef, useEffect } from 'react';
 import { useSession, signIn, signOut } from "next-auth/react";
 import Link from 'next/link';
 import Image from 'next/image';
-import { Search, User, ChevronDown, Settings, LogOut } from 'lucide-react';
+import { Search, User, ChevronDown, Settings, LogOut, Github } from 'lucide-react';
 
 const Header = () => {
   const { data: session } = useSession();
@@ -27,10 +28,20 @@ const Header = () => {
       <div className="container mx-auto px-4 py-2 flex items-center justify-between">
         <Link href="/" className="flex items-center">
           <Image src="/img/logo.svg" alt="ProjectPulse Logo" width={32} height={32} />
-          <span className="text-xl font-semibold text-gray-800 ml-2">ProjectPulse</span>
+          <span className="text-xl font-semibold text-gray-800 ml-2">sprojects.live</span>
         </Link>
 
         <div className="flex items-center space-x-4">
+          {!session && (
+            <button
+              onClick={() => signIn('github')}
+              className="flex items-center bg-gray-800 hover:bg-gray-900 text-white font-medium py-2 px-4 rounded-md transition-colors"
+            >
+              <Github size={20} className="mr-2" />
+              Sign in
+            </button>
+          )}
+          
           {session ? (
             <div className="relative" ref={userMenuRef}>
               <button 
@@ -48,7 +59,7 @@ const Header = () => {
                 <div className="absolute right-0 mt-2 w-72 bg-white rounded-lg overflow-hidden shadow-lg z-20 border border-gray-200">
                   <div className="p-4 border-b border-gray-200">
                     <p className="text-lg font-semibold text-gray-800">{session.user.name}</p>
-                    <p className="text-sm text-gray-600">@{session.user.username}</p>
+                    <p className="text-sm text-gray-600">{session.user.email}</p>
                   </div>
                   <Link 
                     href={`/users/${session.user.username}`}
@@ -74,14 +85,7 @@ const Header = () => {
                 </div>
               )}
             </div>
-          ) : (
-            <button
-              onClick={() => signIn()}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors"
-            >
-              Sign In
-            </button>
-          )}
+          ) : null}
         </div>
       </div>
     </header>

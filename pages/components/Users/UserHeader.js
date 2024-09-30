@@ -8,17 +8,21 @@ export default function UserHeader({
   handleUpdateBio,
   setIsEditing
 }) {
+  if (!user) {
+    return <div>Loading...</div>; // Add a fallback in case `user` is undefined
+  }
+
   return (
     <div className="bg-white shadow-lg rounded-lg p-6 mb-10 flex flex-col md:flex-row items-center md:justify-between border border-gray-200">
       {/* Profile Info */}
       <div className="flex items-center space-x-4">
         <img
-          src={user.profilePicture}
-          alt={user.username}
+          src={user?.profilePicture || ''}
+          alt={user?.username || 'User'}
           className="w-24 h-24 rounded-full border-2 border-gray-300 shadow-sm"
         />
         <div className="flex-1">
-          <h1 className="text-2xl font-semibold text-gray-900">{user.username}</h1>
+          <h1 className="text-2xl font-semibold text-gray-900">{user?.username || 'No Username'}</h1>
           {isEditing ? (
             <textarea
               value={editBio}
@@ -27,13 +31,13 @@ export default function UserHeader({
               rows="3"
             />
           ) : (
-            <p className="text-gray-700 mt-2">{user.bio}</p>
+            <p className="text-gray-700 mt-2">{user?.bio || 'No Bio'}</p>
           )}
           <div className="flex space-x-4 mt-4">
-            <a href={user.github} className="text-gray-700 hover:text-gray-900">
+            <a href={user?.github || '#'} className="text-gray-700 hover:text-gray-900">
               <FaGithub className="text-xl" />
             </a>
-            <a href={user.linkedin} className="text-gray-700 hover:text-gray-900">
+            <a href={user?.linkedin || '#'} className="text-gray-700 hover:text-gray-900">
               <FaLinkedin className="text-xl" />
             </a>
             <button
@@ -57,15 +61,15 @@ export default function UserHeader({
       <div className="mt-6 md:mt-0">
         <div className="flex space-x-6">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">{user.projects.length}</h3>
+            <h3 className="text-lg font-semibold text-gray-900">{user?.projects?.length || 0}</h3>
             <p className="text-gray-500 text-sm">Projects</p>
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">{user.likes}</h3>
+            <h3 className="text-lg font-semibold text-gray-900">{user?.likes || 0}</h3>
             <p className="text-gray-500 text-sm">Likes</p>
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">{user.followers}</h3>
+            <h3 className="text-lg font-semibold text-gray-900">{user?.followers || 0}</h3>
             <p className="text-gray-500 text-sm">Followers</p>
           </div>
         </div>

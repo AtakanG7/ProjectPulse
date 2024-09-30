@@ -2,6 +2,8 @@ import React from 'react';
 import { Globe, MessageCircle, Github, ArrowRight } from 'lucide-react';
 
 const Footer = () => {
+  const year = new Date().getFullYear();
+
   return (
     <footer className="bg-white text-gray-900 py-16 mx-auto">
       <div className="container mx-auto px-6">
@@ -17,7 +19,7 @@ const Footer = () => {
         </div>
 
         <div className="text-center text-gray-700 text-sm">
-          2023 ProjectPulse. All rights reserved.
+          {year} ProjectPulse. All rights reserved.
         </div>
       </div>
     </footer>

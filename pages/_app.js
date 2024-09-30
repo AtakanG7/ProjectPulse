@@ -1,10 +1,13 @@
 import { SessionProvider } from "next-auth/react";
-import "../styles/global.css"; 
+import AnimatedLayout from '../pages/components/Main/AnimatedLayout';
+import '../styles/global.css';
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   return (
     <SessionProvider session={session}>
-      <Component {...pageProps} />
+      <AnimatedLayout>
+        <Component {...pageProps} />
+      </AnimatedLayout>
     </SessionProvider>
   );
 }

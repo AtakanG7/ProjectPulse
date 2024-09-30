@@ -1,0 +1,29 @@
+{
+    "compilerOptions": {
+      "lib": [
+        "dom",
+        "dom.iterable",
+        "esnext"
+      ],
+      "allowJs": true,
+      "skipLibCheck": true,      // Skips type checking in declaration files (*.d.ts)
+      "strict": false,           // Loosens strict type checking
+      "noEmit": true,            // Prevents emitting any compiled output
+      "incremental": true,       // Speeds up builds by caching
+      "module": "esnext",
+      "esModuleInterop": true,
+      "moduleResolution": "node",
+      "resolveJsonModule": true,
+      "isolatedModules": true,   // Ensures that every file can be transpiled in isolation
+      "jsx": "preserve"          // Keeps JSX as is (useful in Next.js for SSR)
+    },
+    "include": [
+      "next-env.d.ts",
+      "**/*.ts",
+      "**/*.tsx"
+    ],
+    "exclude": [
+      "node_modules"
+    ]
+  }
+  

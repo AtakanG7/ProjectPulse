@@ -6,12 +6,44 @@ const Leaderboard = () => {
   const [leaderboard, setLeaderboard] = useState([]);
 
   useEffect(() => {
+    fetchLeaderboard();
+  }, []);
+
+  // Fetch leaderboard from API
+  const fetchLeaderboard = () => {
     fetch("/api/leaderboard")
       .then((res) => res.json())
       .then((data) => setLeaderboard(data.data || []))
       .catch((err) => toast.error("Failed to fetch leaderboard"));
-  }, []);
+  };
 
+  const handleLike = async (id, action) => {
+    try {
+      const res = await fetch(`/api/project/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ action }),
+      });
+      const data = await res.json();
+      if (data.error) {
+        toast.error(data.error);
+      } else {
+        toast.success(`Project ${action === 'like' ? 'liked' : 'unliked'} successfully!`);
+        setLeaderboard((prev) =>
+          prev.map((proj) =>
+            proj._id === id ? { ...proj, likes: data.data.likesCount } : proj
+          )
+        );
+      }
+    } catch (err) {
+      toast.error("Failed to update likes");
+    }
+  };
+  
+
+  // Get rank icon based on index
   const getRankIcon = (index) => {
     switch (index) {
       case 0: return <Trophy className="text-yellow-400" size={24} />;
@@ -50,12 +82,15 @@ const Leaderboard = () => {
                 ) : project.description}
               </p>
               <div className="flex items-center justify-between text-sm">
-                <div className="flex items-center text-blue-600 font-medium">
+                <button
+                  onClick={() => handleLike(project._id, 'like')}
+                  className="flex items-center text-blue-600 font-medium hover:text-blue-800 transition-colors"
+                >
                   <ThumbsUp className="mr-1" size={16} />
                   {project.likes} Likes
-                </div>
+                </button>
                 <span className="text-gray-500">
-                  by {project.author || 'Anonymous'}
+                  created by {project?.createdBy?.username || 'Anonymous'}
                 </span>
               </div>
             </div>
