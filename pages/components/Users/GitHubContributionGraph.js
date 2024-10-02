@@ -1,39 +1,48 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
+import { X } from 'lucide-react';
 
 const GitHubContributionGraph = ({ username }) => {
-  const [svgContent, setSvgContent] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  useEffect(() => {
-    const fetchContributions = async () => {
-      try {
-        const response = await axios.get(`/api/users/github/contributions/${username}`);
-        setSvgContent(response.data);
-      } catch (err) {
-        setError('Failed to fetch GitHub contributions');
-        console.error('Error fetching GitHub contributions:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (username) {
-      fetchContributions();
-    }
-  }, [username]);
-
-  if (loading) return <div>Loading contribution graph...</div>;
-  if (error) return <div>Error: {error}</div>;
-  if (!svgContent) return null;
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   return (
-    <div className="mt-4">
-      <div className="bg-white p-4 rounded-lg shadow-md overflow-x-auto">
-        <div dangerouslySetInnerHTML={{ __html: svgContent }} />
+    <>
+      <div 
+        className="w-full h-[200px] md:h-auto md:max-h-[400px] cursor-pointer overflow-hidden"
+        onClick={openModal}
+      >
+        <img 
+          src={`/api/users/github/contributions/${username}`} 
+          alt={`${username}'s GitHub contributions`}
+          className="w-full h-full object-cover md:object-contain"
+        />
       </div>
-    </div>
+
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-6xl w-full max-h-screen overflow-auto">
+            <div className="flex justify-end p-2">
+              <button 
+                onClick={closeModal}
+                className="text-gray-500 hover:text-gray-700 transition-colors"
+                aria-label="Close"
+              >
+                <X size={24} />
+              </button>
+            </div>
+            <div className="p-4">
+              <img 
+                src={`/api/users/github/contributions/${username}`} 
+                alt={`${username}'s GitHub contributions`}
+                className="w-full h-auto"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

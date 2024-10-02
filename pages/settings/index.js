@@ -1,13 +1,15 @@
 import { useSession } from 'next-auth/react';
 import { useState, useEffect } from 'react';
+import Select from 'react-select';
+import countryList from 'country-list';
 import Header from '../components/Main/Header';
+import UserHeader from '../components/Users/UserHeader';
 
 export default function UserSettingsPage() {
   const { data: session, status } = useSession();
   const [userSettings, setUserSettings] = useState({
     name: '',
     email: '',
-    username: '',
     profilePicture: '',
     bio: '',
     location: '',
@@ -20,22 +22,21 @@ export default function UserSettingsPage() {
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('profile');
 
+  const countries = countryList.getData().map(country => ({
+    value: country.code,
+    label: country.name
+  }));
+
   useEffect(() => {
     if (status === 'authenticated' && session?.user) {
       try {
-        setUserSettings({
-          name: session.user.name || '',
-          email: session.user.email || '',
-          username: session.user.username || '',
-          profilePicture: session.user.image || '',
-          bio: session.user.bio || '',
-          location: session.user.location || '',
-          website: session.user.website || '',
-          githubLink: session.user.githubLink || '',
-          linkedinUrl: session.user.linkedinUrl || '',
-          officialWebsiteUrl: session.user.officialWebsiteUrl || '',
-        });
-        setIsLoading(false);
+        async function fetchData() {
+          const response = await fetch(`/api/users/${session.user.username}`);
+          const data = await response.json();
+          setUserSettings(data.data);
+          setIsLoading(false);
+        }
+        fetchData();
       } catch (err) {
         console.error('Error setting user settings:', err);
         setError('Failed to load user settings.');
@@ -51,6 +52,10 @@ export default function UserSettingsPage() {
     setUserSettings((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleCountryChange = (selectedOption) => {
+    setUserSettings((prev) => ({ ...prev, location: selectedOption.label }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -60,12 +65,12 @@ export default function UserSettingsPage() {
         throw new Error('User ID not found');
       }
   
-      const response = await fetch(`/api/users?id=${session.user.id}`, {
+      const response = await fetch(`/api/users/${session.user?.username}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(userSettings),
+        body: JSON.stringify({ ...userSettings, username: session.user.username }),
       });
   
       if (!response.ok) {
@@ -96,14 +101,26 @@ export default function UserSettingsPage() {
       {fields.map((field) => (
         <div key={field.name}>
           <label htmlFor={field.name} className="block text-sm font-medium text-gray-700 mb-1">{field.label}</label>
-          <input
-            type="text"
-            name={field.name}
-            id={field.name}
-            value={userSettings[field.name]}
-            onChange={handleInputChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-          />
+          {field.name === 'location' ? (
+            <Select
+              options={countries}
+              value={countries.find(country => country.label === userSettings.location)}
+              onChange={handleCountryChange}
+              className="mt-1 block w-full"
+              classNamePrefix="select"
+              style={{ zIndex: '1000 !important'  }}
+            />
+          ) : (
+            <input
+              type="text"
+              name={field.name}
+              id={field.name}
+              value={userSettings[field.name]}
+              onChange={handleInputChange}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              disabled={field.name === 'username'}
+            />
+          )}
         </div>
       ))}
       <button
@@ -122,7 +139,7 @@ export default function UserSettingsPage() {
     { name: 'username', label: 'Username' },
     { name: 'profilePicture', label: 'Profile Picture URL' },
     { name: 'bio', label: 'Bio' },
-    { name: 'location', label: 'Location' },
+    { name: 'location', label: 'Country' },
   ];
 
   const webFields = [
@@ -132,43 +149,57 @@ export default function UserSettingsPage() {
     { name: 'officialWebsiteUrl', label: 'Official Website URL' },
   ];
 
+  if (status === 'unauthenticated') {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+          <strong className="font-bold">Error!</strong>
+          <span className="block sm:inline"> You need to be authenticated to view this page.</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-100">
       <Header />
-      <div className="flex flex-col md:flex-row justify-center mt-5">
-        <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row bg-white shadow-md rounded-lg overflow-hidden">
-            <aside className="md:w-64 bg-gray-50 p-4">
-              <nav>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex flex-col lg:flex-row gap-8">
+          <div className="w-full lg:w-1/2">
+            <UserHeader user={userSettings} />
+          </div>
+          <div className="w-full lg:w-1/2">
+            <div className="bg-white shadow-md rounded-lg overflow-hidden">
+              <div className="flex border-b">
                 <button
                   onClick={() => setActiveTab('profile')}
-                  className={`w-full text-left py-2 px-4 rounded-md mb-2 ${
+                  className={`flex-1 py-4 px-6 text-center font-medium ${
                     activeTab === 'profile'
-                      ? 'bg-indigo-100 text-indigo-700'
-                      : 'text-gray-600 hover:bg-gray-100'
+                      ? 'bg-indigo-50 text-indigo-700 border-b-2 border-indigo-700'
+                      : 'text-gray-500 hover:text-gray-700'
                   }`}
                 >
                   Profile Settings
                 </button>
                 <button
                   onClick={() => setActiveTab('web')}
-                  className={`w-full text-left py-2 px-4 rounded-md ${
+                  className={`flex-1 py-4 px-6 text-center font-medium ${
                     activeTab === 'web'
-                      ? 'bg-indigo-100 text-indigo-700'
-                      : 'text-gray-600 hover:bg-gray-100'
+                      ? 'bg-indigo-50 text-indigo-700 border-b-2 border-indigo-700'
+                      : 'text-gray-500 hover:text-gray-700'
                   }`}
                 >
                   Web Page Settings
                 </button>
-              </nav>
-            </aside>
-            <main className="flex-1 p-6">
-              <h2 className="text-2xl font-semibold mb-6">
-                {activeTab === 'profile' ? 'Profile Settings' : 'Web Page Settings'}
-              </h2>
-              {activeTab === 'profile' && renderForm(profileFields)}
-              {activeTab === 'web' && renderForm(webFields)}
-            </main>
+              </div>
+              <div className="p-6">
+                <h2 className="text-2xl font-semibold mb-6">
+                  {activeTab === 'profile' ? 'Profile Settings' : 'Web Page Settings'}
+                </h2>
+                {activeTab === 'profile' && renderForm(profileFields)}
+                {activeTab === 'web' && renderForm(webFields)}
+              </div>
+            </div>
           </div>
         </div>
       </div>

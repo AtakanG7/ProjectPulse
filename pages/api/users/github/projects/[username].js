@@ -1,5 +1,5 @@
 import axios from 'axios';
-import mongoose from 'mongoose';
+import Project from '../../../../../models/Project';
 
 function mapGithubRepoToProject(repo) {
   return {

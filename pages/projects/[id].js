@@ -24,6 +24,7 @@ export default function ProjectDetailsPage() {
         throw new Error(`Failed to fetch project: ${res.status} ${res.statusText}`);
       }
       const { data } = await res.json();
+      console.log(data)
       setProject(data);
     } catch (err) {
       console.error('Error fetching project:', err);

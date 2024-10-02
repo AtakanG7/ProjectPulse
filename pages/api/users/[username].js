@@ -16,7 +16,18 @@ export default async function handler(req, res) {
       console.log(error)
       res.status(400).json({ error: "Error fetching user data" });
     }
-  } else {
+  } else if (req.method == "PUT") {
+    try {
+      const { id } = req.query;
+      const { name, email, username, profilePicture, bio, location, website, githubLink, linkedinUrl, officialWebsiteUrl } = req.body;
+      const user = await User.findByIdAndUpdate(id, { name, email, username, profilePicture, bio, location, website, githubLink, linkedinUrl, officialWebsiteUrl }, { new: true });
+      res.status(200).json({ message: "User updated", data: user });
+    } catch (error) {
+      console.error("Error updating user:", error);
+      res.status(400).json({ error: "Error updating user" });
+    }
+  }
+    else {
     res.status(405).end(); // Method Not Allowed
   }
 }

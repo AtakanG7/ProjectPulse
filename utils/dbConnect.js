@@ -1,10 +1,6 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const MONGODB_URI = process.env.MONGODB_URI;
-
-if (!MONGODB_URI) {
-  throw new Error("Please define the MONGODB_URI environment variable in .env.local");
-}
 
 let cached = global.mongoose;
 
@@ -24,4 +20,5 @@ async function dbConnect() {
   return cached.conn;
 }
 
-export default dbConnect;
+module.exports = dbConnect;
+

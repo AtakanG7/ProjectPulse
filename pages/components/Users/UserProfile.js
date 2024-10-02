@@ -4,24 +4,20 @@ import { toast } from "react-toastify";
 import dbConnect from '../../../utils/dbConnect';
 
 import UserHeader from "./UserHeader";
-import Tabs from "./Tabs";
 import ProjectsSection from "./ProjectsSection";
-import AboutSection from "./AboutSection";
 import AddProjectModal from "./AddProjectModal";
-import { FaPlus } from 'react-icons/fa';
-import GitHubContributionGraph from "./GitHubContributionGraph";
+import { FaPlus, FaGithub } from 'react-icons/fa';
 
+import ProfileOnboarding from "../Users/ProfileOnboarding";
 
 export default function UserProfile() {
   const router = useRouter();
   const { username } = router.query;
   const [user, setUser] = useState(null);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedTab, setSelectedTab] = useState("Projects");
   const [isEditing, setIsEditing] = useState(false);
   const [editBio, setEditBio] = useState("");
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
     if (username) {
@@ -44,8 +40,6 @@ export default function UserProfile() {
       .then((projects) => {
         toast.success("Project added successfully");
         setIsModalOpen(false);
-        setTitle("");
-        setDescription("");
         setUser((prevUser) => ({
           ...prevUser,
           projects: [...prevUser.projects, ...projects.data],
@@ -54,20 +48,24 @@ export default function UserProfile() {
       .catch((err) => toast.error("Error adding project: " + err.message));
   };
 
-  const handleUpdateBio = () => {
-    fetch(`/api/users/${username}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ bio: editBio }),
-    })
-      .then((res) => res.json())
-      .then(() => {
-        toast.success("Bio updated successfully");
-        setIsEditing(false);
-      })
-      .catch((err) => toast.error("Error updating bio: " + err.message));
+  const handleImportGithub = () => {
+    setShowOnboarding(true);
   };
 
+  const handleOnboardingComplete = async (selectedProjects) => {
+    try {
+      const response = await fetch(`/api/projects/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ projects: selectedProjects }),
+      });
+    } catch (error) {
+      console.error('Error saving projects:', error);
+    }
+  };
+  
   return (
     <>
       {user && (
@@ -77,20 +75,24 @@ export default function UserProfile() {
             isEditing={isEditing}
             editBio={editBio}
             setEditBio={setEditBio}
-            handleUpdateBio={handleUpdateBio}
             setIsEditing={setIsEditing}
           />
-          <GitHubContributionGraph username={user.username} />
-          <div className="my-6">
-            <Tabs selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
+          {showOnboarding && (
+            <ProfileOnboarding
+              username={user?.username}
+              onComplete={() => handleOnboardingComplete()}
+            />
+          )}
+          <div className="flex justify-between items-center mb-6">
+            <button
+              onClick={handleImportGithub}
+              className="flex items-center px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+            >
+              <FaGithub className="mr-2" />
+              Import GitHub
+            </button>
           </div>
-          <div className="mb-6">
-            {selectedTab === "Projects" ? (
-              <ProjectsSection projects={user.projects} />
-            ) : (
-              <AboutSection bio={user.bio} />
-            )}
-          </div>
+          <ProjectsSection projects={user.projects} />
           <AddProjectModal
             isModalOpen={isModalOpen}
             setIsModalOpen={setIsModalOpen}

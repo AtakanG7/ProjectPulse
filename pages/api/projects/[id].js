@@ -10,7 +10,7 @@ const handlers = {
     try {
       const project = await Project.findById(id)
         .select("-__v")
-        .populate("createdBy", "username profilePicture");
+        .populate("createdBy", "-__v -password -email -githubId -refreshToken -sessions");
       if (!project) return res.status(404).json({ error: "Project not found" });
       return res.status(200).json({ data: project });
     } catch (error) {

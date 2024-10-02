@@ -13,4 +13,4 @@ const ProjectSchema = new mongoose.Schema({
   projectUrl: { type: String }, 
 }, { timestamps: true });
 
-export default mongoose.models.Project || mongoose.model("Project", ProjectSchema);
+export default mongoose.models?.Project || mongoose.model('Project', ProjectSchema);

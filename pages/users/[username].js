@@ -3,10 +3,13 @@ import { useSession } from 'next-auth/react';
 import ProfileOnboarding from '../components/Users/ProfileOnboarding';
 import UserProfile from '../components/Users/UserProfile';
 import Header from '../components/Main/Header';
+import OnboardingOffer from '../components/Users/Onboarding/OnboardingOffer';
+
 export default function ProfilePage() {
   const { data: session, status } = useSession();
   const [user, setUser] = useState(null);
   const [isOnboardingComplete, setIsOnboardingComplete] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
     if (session?.user) {
@@ -39,11 +42,19 @@ export default function ProfilePage() {
       if (!response.ok) throw new Error('Failed to save projects');
 
       const newProjects = await response.json();
-      setProjects((prevProjects) => [...prevProjects, ...newProjects.data]);
+      setUser(prevUser => ({
+        ...prevUser,
+        projects: [...(prevUser.projects || []), ...newProjects.data]
+      }));
       setIsOnboardingComplete(true);
+      setShowOnboarding(false);
     } catch (error) {
       console.error('Error saving projects:', error);
     }
+  };
+
+  const handleStartTour = () => {
+    setShowOnboarding(true);
   };
 
   if (status === 'loading') {
@@ -58,9 +69,13 @@ export default function ProfilePage() {
     <>
       <Header />
       <div className="container mx-auto px-4 py-8">
-        <UserProfile user={user} />
-        {!isOnboardingComplete && (
+        {!isOnboardingComplete && !showOnboarding && (
+          <OnboardingOffer username={user?.username} />
+        )}
+        {showOnboarding ? (
           <ProfileOnboarding onComplete={handleOnboardingComplete} username={user?.username} />
+        ) : (
+          <UserProfile user={user} />
         )}
       </div>
     </>

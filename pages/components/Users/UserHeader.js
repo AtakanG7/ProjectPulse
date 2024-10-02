@@ -1,79 +1,93 @@
-import { FaGithub, FaLinkedin } from "react-icons/fa";
+import React from 'react';
+import { FaGithub, FaLinkedin, FaSlidersH, FaGlobe, FaLink } from "react-icons/fa";
+import GithubContributionGraph from "./GitHubContributionGraph";
+import Link from 'next/link';
 
-export default function UserHeader({
-  user,
-  isEditing,
-  editBio,
-  setEditBio,
-  handleUpdateBio,
-  setIsEditing
-}) {
+const UserHeader = ({ user }) => {
   if (!user) {
-    return <div>Loading...</div>; // Add a fallback in case `user` is undefined
+    return (
+      <div className="flex items-center justify-center h-64 bg-white rounded-lg shadow">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-gray-900"></div>
+      </div>
+    );
   }
 
+  const stats = [
+    { label: 'Projects', value: user?.projects?.length || 0 },
+    { label: 'Likes', value: user?.likes || 0 },
+    { label: 'Followers', value: user?.followers?.length || 0 }
+  ];
+
   return (
-    <div className="bg-white shadow-lg rounded-lg p-6 mb-10 flex flex-col md:flex-row items-center md:justify-between border border-gray-200">
-      {/* Profile Info */}
-      <div className="flex items-center space-x-4">
-        <img
-          src={user?.profilePicture || ''}
-          alt={user?.username || 'User'}
-          className="w-24 h-24 rounded-full border-2 border-gray-300 shadow-sm"
-        />
-        <div className="flex-1">
-          <h1 className="text-2xl font-semibold text-gray-900">{user?.username || 'No Username'}</h1>
-          {isEditing ? (
-            <textarea
-              value={editBio}
-              onChange={(e) => setEditBio(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              rows="3"
-            />
-          ) : (
-            <p className="text-gray-700 mt-2">{user?.bio || 'No Bio'}</p>
-          )}
-          <div className="flex space-x-4 mt-4">
-            <a href={user?.github || '#'} className="text-gray-700 hover:text-gray-900">
-              <FaGithub className="text-xl" />
-            </a>
-            <a href={user?.linkedin || '#'} className="text-gray-700 hover:text-gray-900">
-              <FaLinkedin className="text-xl" />
-            </a>
-            <button
-              onClick={() => setIsEditing(!isEditing)}
-              className="text-blue-600 hover:text-blue-800 font-medium"
-            >
-              {isEditing ? "Save" : "Edit Bio"}
-            </button>
+    <div className="bg-white rounded-xl overflow-hidden">
+      <div className="p-6 md:p-8">
+        <div className="flex flex-col md:flex-row md:items-center md:space-x-8">
+          <img
+            src={user?.profilePicture || 'https://via.placeholder.com/150'}
+            alt={user?.username || 'User'}
+            className="w-32 h-32 rounded-full border-4 border-black shadow-lg mx-auto md:mx-0 mb-4 md:mb-0"
+          />
+          <div className="flex-grow">
+            <h1 className="text-3xl font-bold text-black text-center md:text-left mb-2">
+              {user?.username || 'No Username'}
+            </h1>
+            <p className="text-gray-800 mb-4 text-center md:text-left">
+              {user?.bio || 'No Bio'}
+            </p>
+            <div className="flex justify-center md:justify-start space-x-4 mb-4">
+              {user?.githubLink && (
+                <a href={user.githubLink} target="_blank" rel="noopener noreferrer" className="text-black hover:text-gray-600 transition-colors" aria-label="GitHub Profile">
+                  <FaGithub className="text-2xl" />
+                </a>
+              )}
+              {user?.linkedinUrl && (
+                <a href={user.linkedinUrl} target="_blank" rel="noopener noreferrer" className="text-black hover:text-gray-600 transition-colors" aria-label="LinkedIn Profile">
+                  <FaLinkedin className="text-2xl" />
+                </a>
+              )}
+              {user?.website && (
+                <a href={user.website} target="_blank" rel="noopener noreferrer" className="text-black hover:text-gray-600 transition-colors" aria-label="Personal Website">
+                  <FaGlobe className="text-2xl" />
+                </a>
+              )}
+              {user?.officialWebsiteUrl && (
+                <a href={user.officialWebsiteUrl} target="_blank" rel="noopener noreferrer" className="text-black hover:text-gray-600 transition-colors" aria-label="Official Website">
+                  <FaLink className="text-2xl" />
+                </a>
+              )}
+              <Link href="/settings">
+                <div className="group relative">
+                  <div className="rounded-full">
+                    <FaSlidersH 
+                      className="text-xl" 
+                      aria-label="Settings"
+                    />
+                  </div>
+                  <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 bg-black text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 mb-2">
+                    Settings
+                  </span>
+                </div>
+              </Link>
+            </div>
           </div>
-          {isEditing && (
-            <button
-              onClick={handleUpdateBio}
-              className="bg-blue-600 text-white p-2 rounded-lg mt-2 hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              Save Bio
-            </button>
-          )}
+        </div>
+        <div className="flex justify-center md:justify-end space-x-8 mt-6">
+          {stats.map((stat, index) => (
+            <div key={index} className="text-center">
+              <h3 className="text-xl font-bold text-black">{stat.value}</h3>
+              <p className="text-gray-800">{stat.label}</p>
+            </div>
+          ))}
         </div>
       </div>
-      {/* User Stats */}
-      <div className="mt-6 md:mt-0">
-        <div className="flex space-x-6">
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900">{user?.projects?.length || 0}</h3>
-            <p className="text-gray-500 text-sm">Projects</p>
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900">{user?.likes || 0}</h3>
-            <p className="text-gray-500 text-sm">Likes</p>
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900">{user?.followers || 0}</h3>
-            <p className="text-gray-500 text-sm">Followers</p>
-          </div>
+      <div className="bg-white p-6 md:p-8">
+        <h2 className="text-xl font-semibold text-black mb-4">GitHub Contributions</h2>
+        <div className="overflow-x-auto">
+          <GithubContributionGraph username={user?.username} />
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default UserHeader;
