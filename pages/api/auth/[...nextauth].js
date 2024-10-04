@@ -1,8 +1,9 @@
 import NextAuth from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 import mongoose from "mongoose";
-import User from "../../../models/User";
+import getUserModel from "../../../models/User";
 import axios from 'axios';
+import dbConnect from "../../../utils/dbConnect";
 
 // API configuration
 const RENDER_API_KEY = process.env.RENDER_API_KEY;
@@ -140,8 +141,6 @@ export const authOptions = {
   callbacks: {
     async signIn({ user, account, profile }) {
       try {
-        await mongoose.connect(process.env.MONGODB_URI);
-
         const githubUserData = {
           githubId: profile.id?.toString(),
           name: profile.name || profile.login,
@@ -161,8 +160,9 @@ export const authOptions = {
         } else {
           console.error(`Failed to set up subdomain for user ${profile.login}`);
         }
-
-        const dbUser = await User.findOneAndUpdate(
+        await dbConnect();
+        const UserModel = getUserModel();
+        const dbUser = await UserModel.findOneAndUpdate(
           { email: user.email },
           githubUserData,
           { new: true, upsert: true, setDefaultsOnInsert: true }
@@ -186,9 +186,9 @@ export const authOptions = {
     async session({ session, token }) {
       if (session?.user) {
         try {
-          await mongoose.connect(process.env.MONGODB_URI);
-
-          const dbUser = await User.findById(token.userId).lean();
+          await dbConnect();
+          const UserModel = getUserModel();
+          const dbUser = await UserModel.findById(token.userId).lean();
 
           if (dbUser) {
             session.user = {

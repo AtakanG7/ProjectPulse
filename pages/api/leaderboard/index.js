@@ -1,9 +1,11 @@
 import dbConnect from "../../../utils/dbConnect";
-import Project from "../../../models/Project";
+import getProjectModel from "../../../models/Project";
 
 export default async function handler(req, res) {
   await dbConnect();
 
+  const Project = getProjectModel();
+  
   if (req.method === "GET") {
     try {
       const projects = await Project.find({})

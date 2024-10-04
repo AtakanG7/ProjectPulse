@@ -1,6 +1,6 @@
 import dbConnect from "../../../utils/dbConnect";
-import Project from "../../../models/Project";
-import User from "../../../models/User";
+import getProjectModel from "../../../models/Project";
+import getUserModel from "../../../models/User";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]";
 
@@ -8,6 +8,7 @@ const handlers = {
   GET: async (req, res) => {
     const { id } = req.query;
     try {
+      const Project = getProjectModel();
       const project = await Project.findById(id)
         .select("-__v")
         .populate("createdBy", "-__v -password -email -githubId -refreshToken -sessions");
@@ -27,6 +28,7 @@ const handlers = {
     const updateData = req.body;
 
     try {
+      const Project = getProjectModel();
       const project = await Project.findOneAndUpdate(
         { _id: id, createdBy: session.user.id },
         updateData,
@@ -49,6 +51,7 @@ const handlers = {
     const { id } = req.query;
 
     try {
+      const Project = getProjectModel();
       const project = await Project.findOneAndDelete({ _id: id, createdBy: session.user.id });
       if (!project) return res.status(404).json({ error: "Project not found or unauthorized" });
 
@@ -72,6 +75,7 @@ const handlers = {
       let project;
 
       if (action === 'like') {
+        const Project = getProjectModel();
         project = await Project.findByIdAndUpdate(
           id,
           { $addToSet: { likes: session.user.id }, $inc: { likesCount: 1 } },

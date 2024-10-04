@@ -65,6 +65,10 @@ export default function ProfilePage() {
     return <div>Please sign in to view your profile.</div>;
   }
 
+  if (!user) {
+    return <div>Loading user data...</div>;
+  }
+
   return (
     <>
       <Header />

@@ -1,5 +1,7 @@
 import axios from 'axios';
-import Project from '../../../../../models/Project';
+import getProjectModel from '../../../../../models/Project';
+
+const Project = getProjectModel();
 
 function mapGithubRepoToProject(repo) {
   return {

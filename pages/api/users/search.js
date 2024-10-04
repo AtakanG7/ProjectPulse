@@ -1,8 +1,10 @@
 import dbConnect from "../../../utils/dbConnect";
-import User from "../../../models/User";
+import getUserModel from "../../../models/User";
+
 
 export default async function handler(req, res) {
   await dbConnect();
+  const User = getUserModel();
 
   const { query } = req.query;
 

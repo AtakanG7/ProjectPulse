@@ -1,9 +1,12 @@
 import dbConnect from "../../../utils/dbConnect";
-import Project from "../../../models/Project";
-import User from "../../../models/User";
+import getProjectModel from "../../../models/Project";
+import getUserModel from "../../../models/User";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]";
 import mongoose from "mongoose";
+
+const Project = getProjectModel();
+const User = getUserModel();
 
 const DEFAULT_PAGE_SIZE = 10;
 const MAX_PAGE_SIZE = 100;

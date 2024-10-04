@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { FaArrowLeft, FaThumbsUp, FaTag, FaLink, FaCalendar, FaUser, FaClock, FaFolderOpen, FaEdit } from 'react-icons/fa';
 import Link from 'next/link';
 import UserHeader from '../components/Users/UserHeader';
+import ProjectImages from '../components/Users/Projects/ProjectImages';
 
 export default function ProjectDetailsPage() {
   const router = useRouter();
@@ -50,6 +51,13 @@ export default function ProjectDetailsPage() {
     return <div className="container mx-auto px-4 py-8">Project not found</div>;
   }
 
+  const handleProjectUpdate = (updatedProject) => {
+    setProject((prevProject) => ({
+      ...prevProject,
+      images: updatedProject.images,
+    }));
+  }
+
   return (
     <div className="min-h-screen bg-gray-100 container mx-auto px-4 py-8">
       <UserHeader
@@ -67,12 +75,6 @@ export default function ProjectDetailsPage() {
       </Link>
 
       <div className="bg-white shadow-lg rounded-lg overflow-hidden mt-8">
-        {project.imageUrl && (
-          <div className="h-64 overflow-hidden">
-            <img src={project.imageUrl} alt={project.title} className="w-full h-full object-cover" />
-          </div>
-        )}
-
         <div className="p-8">
           <div className="flex justify-between items-center mb-4">
             <h1 className="text-4xl font-bold text-gray-900">{project.title}</h1>
@@ -80,7 +82,7 @@ export default function ProjectDetailsPage() {
               <FaEdit size={24} />
             </Link>
           </div>
-
+          
           <div className="flex flex-wrap items-center text-sm text-gray-600 mb-6">
             <div className="flex items-center mr-6 mb-2">
               <FaCalendar className="mr-2" />
@@ -111,7 +113,15 @@ export default function ProjectDetailsPage() {
             )}
           </div>
 
-          <p className="text-gray-700 mb-8 leading-relaxed">{project.description}</p>
+          <div className="text-gray-700 mb-8 leading-relaxed" dangerouslySetInnerHTML={{__html: project.description}} />        
+          {/* ProjectImages component */}
+          <div className="mb-8">
+            <ProjectImages
+              projectId={project._id}
+              images={project.images || []}
+              onUpdate={handleProjectUpdate}
+            />
+          </div>
 
           <div className="flex flex-wrap gap-2 mb-8">
             {project.tags && project.tags.map((tag, index) => (

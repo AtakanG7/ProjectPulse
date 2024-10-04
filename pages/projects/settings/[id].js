@@ -1,8 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { ArrowLeft, Trash, Save, PencilIcon } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import Header from '../../components/Main/Header';
 import DeleteProjectModal from '../../components/Users/DeleteProjectModal';
+import ProjectImages from '../../components/Users/Projects/ProjectImages';
+import toast, { Toaster } from 'react-hot-toast';
+
+const FullScreenEditor = dynamic(() => import('../../components/Main/FullScreenEditor'), { ssr: false });
 
 const ProjectSettingsPage = () => {
   const router = useRouter();
@@ -10,14 +16,14 @@ const ProjectSettingsPage = () => {
   const [project, setProject] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [showEditor, setShowEditor] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
-    description: '',
     category: '',
     tags: '',
     projectUrl: '',
-    imageUrl: '',
   });
 
   useEffect(() => {
@@ -36,11 +42,9 @@ const ProjectSettingsPage = () => {
       setProject(data);
       setFormData({
         title: data.title,
-        description: data.description,
         category: data.category || '',
         tags: data.tags ? data.tags.join(', ') : '',
         projectUrl: data.projectUrl || '',
-        imageUrl: data.imageUrl || '',
       });
     } catch (err) {
       console.error('Error fetching project:', err);
@@ -60,7 +64,7 @@ const ProjectSettingsPage = () => {
   
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setSaving(true);
     try {
       const res = await fetch(`/api/projects/${id}`, {
         method: 'PUT',
@@ -69,6 +73,7 @@ const ProjectSettingsPage = () => {
         },
         body: JSON.stringify({
           ...formData,
+          description: project.description,
           tags: formData.tags.split(',').map(tag => tag.trim()),
         }),
       });
@@ -77,14 +82,35 @@ const ProjectSettingsPage = () => {
         throw new Error(`Failed to update project: ${res.status} ${res.statusText}`);
       }
   
+      toast.success('Project updated successfully');
       router.push(`/projects/${id}`);
     } catch (err) {
       console.error('Error updating project:', err);
-      setError(err.message);
+      toast.error(err.message);
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
+
+  const handleEditorSave = useCallback(async (editorData) => {
+    setSaving(true);
+    try {
+      const updatedProject = { ...project, ...editorData };
+      const res = await fetch(`/api/projects/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedProject),
+      });
+      if (!res.ok) throw new Error('Failed to update project');
+      setProject(updatedProject);
+      toast.success('Project description saved successfully');
+    } catch (err) {
+      toast.error('Failed to save project description');
+    } finally {
+      setSaving(false);
+      setShowEditor(false);
+    }
+  }, [id, project]);
 
   const handleDeleteClick = () => {
     setIsDeleteModalOpen(true);
@@ -100,14 +126,22 @@ const ProjectSettingsPage = () => {
       if (!res.ok) {
         throw new Error(`Failed to delete project: ${res.status} ${res.statusText}`);
       }
-      router.push('/projects'); // Redirect to projects list after deletion
+      toast.success('Project deleted successfully');
+      router.push('/projects');
     } catch (err) {
       console.error('Error deleting project:', err);
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setIsDeleteModalOpen(false);
     }
   };
+
+  const handleProjectUpdate = (updatedProject) => {
+    setProject((prevProject) => ({
+      ...prevProject,
+      images: updatedProject.images,
+    }));
+  }
 
   if (loading) {
     return <div className="flex items-center justify-center h-screen">Loading...</div>;
@@ -129,72 +163,86 @@ const ProjectSettingsPage = () => {
   }
 
   return (
-    <>
+    <div className="min-h-screen bg-gray-100">
       <Header />
-      <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl mx-auto">
-          <Link href={`/projects/${id}`} className="inline-flex items-center text-indigo-600 hover:text-indigo-800 mb-6 transition-colors duration-200">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
-            </svg>
+      <Toaster position="top-right" />
+      <div className="py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <Link href={`/projects/${id}`} className="inline-flex items-center text-indigo-600 hover:text-indigo-800 transition-colors duration-200 mb-6">
+            <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Project
           </Link>
 
           <div className="bg-white shadow-xl rounded-lg overflow-hidden">
-            <div className="px-4 py-5 sm:p-6">
+            <div className="p-6">
               <h1 className="text-3xl font-extrabold text-gray-900 mb-8">Edit Project Settings</h1>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {Object.entries(formData).map(([key, value]) => (
-                  <div key={key}>
-                    <label htmlFor={key} className="block text-sm font-medium text-gray-700 capitalize">
-                      {key.replace(/([A-Z])/g, ' $1').trim()}
-                    </label>
-                    {key === 'description' ? (
-                      <textarea
-                        id={key}
-                        name={key}
-                        rows="4"
-                        value={value}
-                        onChange={handleInputChange}
-                        required={key === 'title' || key === 'description'}
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200"
-                      />
-                    ) : (
-                      <input
-                        type={key.includes('Url') ? 'url' : 'text'}
-                        id={key}
-                        name={key}
-                        value={value}
-                        onChange={handleInputChange}
-                        required={key === 'title' || key === 'description'}
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200"
-                      />
-                    )}
+              
+              {showEditor ? (
+                <FullScreenEditor
+                  initialData={project}
+                  onSave={handleEditorSave}
+                  onBack={() => setShowEditor(false)}
+                  saving={saving}
+                />
+              ) : (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  <div>
+                    <ProjectImages
+                      projectId={project._id}
+                      images={project.images || []}
+                      onUpdate={handleProjectUpdate}
+                    />
                   </div>
-                ))}
 
-                <div className="flex justify-between items-center">
-                  <button
-                    type="button"
-                    onClick={handleDeleteClick}
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-                    </svg>
-                    Delete Project
-                  </button>
-                  <button
-                    type="submit"
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    Save Changes
-                  </button>
+                  <div>
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                      {Object.entries(formData).map(([key, value]) => (
+                        <div key={key}>
+                          <label htmlFor={key} className="block text-sm font-medium text-gray-700 capitalize mb-1">
+                            {key.replace(/([A-Z])/g, ' $1').trim()}
+                          </label>
+                          <input
+                            type={key.includes('Url') ? 'url' : 'text'}
+                            id={key}
+                            name={key}
+                            value={value}
+                            onChange={handleInputChange}
+                            required={key === 'title'}
+                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200"
+                          />
+                        </div>
+                      ))}
+
+                      <button
+                        type="button"
+                        onClick={() => setShowEditor(true)}
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200"
+                      >
+                        <PencilIcon className="mr-2 h-4 w-4 inline-block" />
+                        <span className="inline-block text-sm font-medium text-gray-700">Edit Project Description</span>
+                      </button>
+
+                      <div className="flex justify-between items-center mt-8">
+                        <button
+                          type="button"
+                          onClick={handleDeleteClick}
+                          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200"
+                        >
+                          <Trash className="mr-2 h-4 w-4" />
+                          Delete Project
+                        </button>
+                        <button
+                          type="submit"
+                          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200"
+                        >
+                          <Save className="mr-2 h-4 w-4" />
+                          Save Changes
+                        </button>
+                      </div>
+                    </form>
+                  </div>
                 </div>
-              </form>
+              )}
             </div>
           </div>
         </div>
@@ -206,7 +254,7 @@ const ProjectSettingsPage = () => {
         onDelete={handleDeleteProject}
         projectName={project?.title || ''}
       />
-    </>
+    </div>
   );
 };
 

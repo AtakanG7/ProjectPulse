@@ -113,12 +113,12 @@ export default function UserSettingsPage() {
           ) : (
             <input
               type="text"
-              name={field.name}
-              id={field.name}
-              value={userSettings[field.name]}
+              name={field?.name}
+              id={field?.name}
+              value={userSettings[field?.name]}
               onChange={handleInputChange}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              disabled={field.name === 'username'}
+              disabled={field?.name === 'username'}
             />
           )}
         </div>
