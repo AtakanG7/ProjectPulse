@@ -128,28 +128,21 @@ async function handleDelete(req, res) {
     return res.status(400).json({ message: 'Invalid request body' });
   }
 
-  console.log('handleDelete attempting to delete image');
   try {
-    console.log('handleDelete deleting from Cloudinary');
     await deleteImageFromCdn(imageUrl);
-    console.log('handleDelete deleting metadata');
     await deleteImageMetadata(projectId, imageUrl);
 
-    console.log('handleDelete attempting to update project');
     await dbConnect();
     const Project = getProjectModel();
 
     const project = await Project.findById(projectId);
     if (!project) {
-      console.log('handleDelete project not found');
       return res.status(404).json({ message: 'Project not found' });
     }
 
-    console.log('handleDelete updating project images');
     project.images = project.images.filter(img => img !== imageUrl);
     const updatedProject = await project.save();
 
-    console.log('handleDelete success');
     res.status(200).json({ 
       message: 'Image deleted successfully', 
       project: updatedProject

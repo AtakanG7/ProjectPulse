@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const MONGODB_URI = process.env.MONGODB_URI;
-const IDLE_TIMEOUT = 300000; // 5 minutes in milliseconds
+const IDLE_TIMEOUT = 300000; 
 
 let connection = null;
 let lastActivityTime = null;
@@ -17,7 +17,7 @@ async function dbConnect() {
     connection = await mongoose.connect(MONGODB_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 5000, // 5 seconds timeout for server selection
+      serverSelectionTimeoutMS: 5000, 
     });
     console.log('New database connection established');
     lastActivityTime = Date.now();
@@ -53,7 +53,6 @@ async function closeConnectionIfIdle() {
   }
 }
 
-// Check for idle connection every minute
 setInterval(closeConnectionIfIdle, 60000);
 
 export default dbConnect;

@@ -1,6 +1,5 @@
 import dbConnect from "../../../utils/dbConnect";
 import getProjectModel from "../../../models/Project";
-import getUserModel from "../../../models/User";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]";
 
@@ -8,6 +7,7 @@ const handlers = {
   GET: async (req, res) => {
     const { id } = req.query;
     try {
+      await dbConnect();
       const Project = getProjectModel();
       const project = await Project.findById(id)
         .select("-__v")
@@ -28,6 +28,7 @@ const handlers = {
     const updateData = req.body;
 
     try {
+      await dbConnect();
       const Project = getProjectModel();
       const project = await Project.findOneAndUpdate(
         { _id: id, createdBy: session.user.id },
@@ -51,6 +52,7 @@ const handlers = {
     const { id } = req.query;
 
     try {
+      await dbConnect();
       const Project = getProjectModel();
       const project = await Project.findOneAndDelete({ _id: id, createdBy: session.user.id });
       if (!project) return res.status(404).json({ error: "Project not found or unauthorized" });
@@ -75,6 +77,7 @@ const handlers = {
       let project;
 
       if (action === 'like') {
+        await dbConnect();
         const Project = getProjectModel();
         project = await Project.findByIdAndUpdate(
           id,
@@ -82,6 +85,8 @@ const handlers = {
           { new: true }
         );
       } else if (action === 'unlike') {
+        await dbConnect();
+        const Project = getProjectModel();
         project = await Project.findByIdAndUpdate(
           id,
           { $pull: { likes: session.user.id }, $inc: { likesCount: -1 } },
@@ -102,8 +107,6 @@ const handlers = {
 };
 
 export default async function handler(req, res) {
-  await dbConnect();
-  
   const { id } = req.query;
   const handler = handlers[req.method];
   if (handler) {

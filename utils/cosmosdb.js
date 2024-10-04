@@ -15,7 +15,6 @@ export default async function connectToCosmosDB() {
   }
 
   if (isConnecting) {
-    // Wait for the existing connection attempt to finish
     while (isConnecting) {
       await delay(100);
     }

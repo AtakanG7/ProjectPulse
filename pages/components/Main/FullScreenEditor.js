@@ -5,7 +5,7 @@ import List from '@editorjs/list';
 import Image from '@editorjs/image';
 import { FaSave, FaArrowLeft } from 'react-icons/fa';
 
-const FullScreenEditor = ({ initialData, onSave, onBack, saving }) => {
+const FullScreenEditor = ({ initialData, onSave, saving, onClose, projectId }) => {
   const editorRef = useRef(null);
   const editorInstanceRef = useRef(null);
 
@@ -22,6 +22,18 @@ const FullScreenEditor = ({ initialData, onSave, onBack, saving }) => {
   }, []);
 
   const initEditor = () => {
+    let editorData;
+    if (typeof initialData === 'string') {
+      try {
+        editorData = JSON.parse(initialData);
+      } catch (error) {
+        console.error('Error parsing initial data:', error);
+        editorData = null;
+      }
+    } else if (initialData && typeof initialData === 'object') {
+      editorData = initialData;
+    }
+
     const editor = new EditorJS({
       holder: editorRef.current,
       tools: {
@@ -30,26 +42,57 @@ const FullScreenEditor = ({ initialData, onSave, onBack, saving }) => {
         image: {
           class: Image,
           config: {
-            endpoints: {
-              byFile: 'http://localhost:8008/uploadFile', // Replace with your image upload endpoint
-              byUrl: 'http://localhost:8008/fetchUrl',  // Replace with your image fetch endpoint
+            uploader: {
+              uploadByFile: async (file) => {
+                const formData = new FormData();
+                formData.append('image', file);
+                formData.append('projectId', projectId);
+
+                try {
+                  const response = await fetch('/api/projects/images', {
+                    method: 'POST',
+                    body: formData,
+                  });
+
+                  if (!response.ok) {
+                    throw new Error('Image upload failed');
+                  }
+
+                  const data = await response.json();
+
+                  return {
+                    success: 1,
+                    file: {
+                      url: data.imageUrl,
+                    }
+                  };
+                } catch (error) {
+                  console.error('Error uploading image:', error);
+                  return {
+                    success: 0,
+                    file: {
+                      url: null,
+                    }
+                  };
+                }
+              }
             }
           }
         }
       },
-      data: {
+      data: editorData || {
         blocks: [
           {
             type: "header",
             data: {
-              text: initialData.title,
+              text: "Start writing your project description...",
               level: 1
             }
           },
           {
             type: "paragraph",
             data: {
-              text: initialData.description || "Start writing your project description..."
+              text: "Add your content here."
             }
           }
         ]
@@ -63,26 +106,20 @@ const FullScreenEditor = ({ initialData, onSave, onBack, saving }) => {
   const handleSave = async () => {
     if (editorInstanceRef.current) {
       const editorData = await editorInstanceRef.current.save();
-      const projectData = {
-        title: editorData.blocks.find(block => block.type === 'header')?.data.text || initialData.title,
-        description: editorData.blocks
-          .filter(block => block.type !== 'header')
-          .map(block => block.data.text)
-          .join('\n\n')
-      };
-      onSave(projectData);
+      console.log('Editor data to be saved:', editorData);
+      onSave(editorData);
     }
   };
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="flex flex-col h-full">
       <div className="bg-white shadow-sm p-4 flex justify-between items-center">
         <button
-          onClick={onBack}
-          className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 flex items-center"
+          onClick={onClose}
+          className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 flex items-center"
         >
           <FaArrowLeft className="mr-2" />
-          Back to Settings
+          Back
         </button>
         <button
           onClick={handleSave}
@@ -93,7 +130,7 @@ const FullScreenEditor = ({ initialData, onSave, onBack, saving }) => {
           {saving ? 'Saving...' : 'Save'}
         </button>
       </div>
-      <div ref={editorRef} className="flex-grow overflow-auto p-8 bg-gray-50" />
+      <div ref={editorRef} className="flex-grow overflow-auto py-8 px-4 bg-gray-50" />
     </div>
   );
 };
