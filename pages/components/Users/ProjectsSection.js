@@ -1,5 +1,5 @@
 import React from 'react';
-import { ThumbsUp, ExternalLink, Tag, GitHub, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { FaThumbsUp, FaExternalLinkAlt, FaGithub, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import Link from 'next/link';
 
 const ImageCarousel = ({ images }) => {
@@ -47,10 +47,10 @@ const ImageCarousel = ({ images }) => {
       ))}
       <div className="absolute flex justify-between transform -translate-y-1/2 left-2 right-2 top-1/2">
         <button onClick={goToPrevious} className="p-1 bg-white bg-opacity-50">
-          <ChevronLeft className="text-black" size={20} />
+          <FaChevronLeft className="text-black" size={20} />
         </button>
         <button onClick={goToNext} className="p-1 bg-white bg-opacity-50">
-          <ChevronRight className="text-black" size={20} />
+          <FaChevronRight className="text-black" size={20} />
         </button>
       </div>
     </div>
@@ -71,7 +71,7 @@ const ProjectCard = ({ project }) => (
             </h3>
             <div className="flex items-center space-x-2 flex-shrink-0 ml-2">
               <span className="text-sm text-gray-600 flex items-center">
-                <ThumbsUp size={14} className="mr-1" />
+                <FaThumbsUp size={14} className="mr-1" />
                 {project.likesCount}
               </span>
               {project.githubUrl && (
@@ -82,7 +82,7 @@ const ProjectCard = ({ project }) => (
                   className="text-gray-600"
                   aria-label="GitHub Repository"
                 >
-                  <GitHub size={16} />
+                  <FaGithub size={16} />
                 </a>
               )}
               {project.projectUrl && (
@@ -93,7 +93,7 @@ const ProjectCard = ({ project }) => (
                   className="text-gray-600"
                   aria-label="Project Website"
                 >
-                  <ExternalLink size={16} />
+                  <FaExternalLinkAlt size={16} />
                 </a>
               )}
             </div>

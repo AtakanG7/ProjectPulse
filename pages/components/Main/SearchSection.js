@@ -1,8 +1,10 @@
 import React, { useState, useCallback, useEffect, useTransition, useDeferredValue } from 'react';
 import { Search, Loader, User } from 'lucide-react';
+import { Coffee } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { debounce } from 'lodash';
 import Link from 'next/link';
+import OneTimeToastSequence from './CustomToast';
 
 const SearchSection = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -56,6 +58,7 @@ const SearchSection = () => {
 
   return (
     <section className="bg-gradient-to-br py-20 px-4 sm:px-6 lg:px-8">
+      <OneTimeToastSequence />
       <div className="container mx-auto max-w-4xl">
         {/* Search Bar */}
         <div className="relative mb-10 transition-all duration-300 ease-in-out transform hover:scale-105">

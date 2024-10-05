@@ -23,14 +23,14 @@ export default function ProjectDetails({ project, handleProjectUpdate }) {
         {/* Header Section */}
         <div className="mb-6">
           <div className="flex justify-between items-center mb-4">
-            <h1 className="text-4xl font-bold text-gray-900">{project.title}</h1>
-            <Link href={`/projects/settings/${project._id}`} className="text-indigo-600 hover:text-indigo-800">
+            <h1 className="text-4xl font-bold text-gray-900">{project?.title}</h1>
+            <Link href={`/projects/settings/${project?._id}`} className="text-indigo-600 hover:text-indigo-800">
               <FaEdit size={24} />
             </Link>
           </div>
-          {project.projectUrl && (
+          {project?.projectUrl && (
             <a
-              href={project.projectUrl}
+              href={project?.projectUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-dark-600 bg-white hover:bg-dark-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
@@ -45,29 +45,29 @@ export default function ProjectDetails({ project, handleProjectUpdate }) {
         <div className="flex flex-wrap gap-4 mb-8">
           <div className="flex items-center text-sm text-gray-600">
             <FaCalendar className="mr-2" />
-            <span>Created: {new Date(project.createdAt).toLocaleDateString()}</span>
+            <span>Created: {new Date(project?.createdAt).toLocaleDateString()}</span>
           </div>
           <div className="flex items-center text-sm text-gray-600">
             <FaClock className="mr-2" />
-            <span>Updated: {new Date(project.updatedAt).toLocaleDateString()}</span>
+            <span>Updated: {new Date(project?.updatedAt).toLocaleDateString()}</span>
           </div>
           <div className="flex items-center text-sm text-gray-600">
             <FaUser className="mr-2" />
-            <span>By: {project.createdBy?.username}</span>
-            {project.createdBy?.profilePicture && (
+            <span>By: {project?.createdBy?.username}</span>
+            {project?.createdBy?.profilePicture && (
               <img
-                src={project.createdBy?.profilePicture}
-                alt={project.createdBy?.username}
+                src={project?.createdBy?.profilePicture}
+                alt={project?.createdBy?.username}
                 width={24}
                 height={24}
                 className="ml-2 rounded-full"
               />
             )}
           </div>
-          {project.category && (
+          {project?.category && (
             <div className="flex items-center text-sm text-gray-600">
               <FaFolderOpen className="mr-2" />
-              <span>Category: {project.category}</span>
+              <span>Category: {project?.category}</span>
             </div>
           )}
         </div>
@@ -75,12 +75,12 @@ export default function ProjectDetails({ project, handleProjectUpdate }) {
         {/* Likes */}
         <div className="flex items-center mb-8">
           <FaThumbsUp className="text-indigo-600 mr-2" />
-          <span className="text-lg font-semibold text-gray-700">{project.likesCount} likes</span>
+          <span className="text-lg font-semibold text-gray-700">{project?.likesCount} likes</span>
         </div>
 
         {/* Tags */}
         <div className="flex flex-wrap gap-2 mb-8">
-          {project.tags && project.tags.map((tag, index) => (
+          {project?.tags && project?.tags.map((tag, index) => (
             <span key={index} className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
               <FaTag className="mr-1" />
               {tag}
@@ -107,8 +107,8 @@ export default function ProjectDetails({ project, handleProjectUpdate }) {
 
           {activeTab === 'images' && (
             <ProjectImages
-              projectId={project._id}
-              images={project.images || []}
+              projectId={project?._id}
+              images={project?.images || []}
               onUpdate={handleProjectUpdate}
             />
           )}
@@ -117,16 +117,16 @@ export default function ProjectDetails({ project, handleProjectUpdate }) {
             <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
               <div className="sm:col-span-1">
                 <dt className="text-sm font-medium text-gray-500">Project ID</dt>
-                <dd className="mt-1 text-sm text-gray-900">{project._id}</dd>
+                <dd className="mt-1 text-sm text-gray-900">{project?._id}</dd>
               </div>
               <div className="sm:col-span-1">
                 <dt className="text-sm font-medium text-gray-500">Created By</dt>
                 <dd className="mt-1 text-sm text-gray-900 flex items-center">
-                  {project.createdBy?.username}
-                  {project.createdBy?.profilePicture && (
+                  {project?.createdBy?.username}
+                  {project?.createdBy?.profilePicture && (
                     <img
-                      src={project.createdBy?.profilePicture}
-                      alt={project.createdBy?.username}
+                      src={project?.createdBy?.profilePicture}
+                      alt={project?.createdBy?.username}
                       width={20}
                       height={20}
                       className="ml-2 rounded-full"
@@ -136,11 +136,11 @@ export default function ProjectDetails({ project, handleProjectUpdate }) {
               </div>
               <div className="sm:col-span-1">
                 <dt className="text-sm font-medium text-gray-500">Category</dt>
-                <dd className="mt-1 text-sm text-gray-900">{project.category || 'N/A'}</dd>
+                <dd className="mt-1 text-sm text-gray-900">{project?.category || 'N/A'}</dd>
               </div>
               <div className="sm:col-span-1">
                 <dt className="text-sm font-medium text-gray-500">Total Likes</dt>
-                <dd className="mt-1 text-sm text-gray-900">{project.likesCount}</dd>
+                <dd className="mt-1 text-sm text-gray-900">{project?.likesCount}</dd>
               </div>
             </dl>
           )}

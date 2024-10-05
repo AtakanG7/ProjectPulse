@@ -114,7 +114,7 @@ const ProjectImages = ({ projectId, images, onUpdate }) => {
   };
 
   const navigateImage = (direction) => {
-    const newIndex = (selectedImageIndex + direction + images.length) % images.length;
+    const newIndex = (selectedImageIndex + direction + images?.length) % images?.length;
     setSelectedImageIndex(newIndex);
   };
 
@@ -123,7 +123,7 @@ const ProjectImages = ({ projectId, images, onUpdate }) => {
       <Toaster position="top-right" />
       <h1 className="text-3xl font-semibold mb-8 text-gray-900 tracking-wide">Project Gallery</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {images.map((image, index) => (
+        {images?.map((image, index) => (
           <div
             key={index}
             className="relative group aspect-square bg-gray-100 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer"
@@ -143,7 +143,7 @@ const ProjectImages = ({ projectId, images, onUpdate }) => {
           </div>
         ))}
 
-        {images.length < 3 && (
+        {images?.length < 3 && (
           <div className="relative flex items-center justify-center aspect-square bg-gray-50 rounded-lg border-2 border-dashed border-gray-300 hover:border-gray-400 transition-colors duration-300">
             <label className="cursor-pointer flex flex-col items-center justify-center h-full w-full text-center">
               <input

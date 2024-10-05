@@ -1,27 +1,33 @@
-import React, { useEffect, useRef } from 'react';
-import EditorJS from '@editorjs/editorjs';
-import Header from '@editorjs/header';
-import List from '@editorjs/list';
-import Image from '@editorjs/image';
+import React, { useEffect, useRef, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { FaSave, FaArrowLeft } from 'react-icons/fa';
+
+const EditorJS = dynamic(() => import('@editorjs/editorjs'), { ssr: false });
+const Header = dynamic(() => import('@editorjs/header'), { ssr: false });
+const List = dynamic(() => import('@editorjs/list'), { ssr: false });
+const Image = dynamic(() => import('@editorjs/image'), { ssr: false });
 
 const FullScreenEditor = ({ initialData, onSave, saving, onClose, projectId }) => {
   const editorRef = useRef(null);
-  const editorInstanceRef = useRef(null);
+  const [editorInstance, setEditorInstance] = useState(null);
 
   useEffect(() => {
-    if (!editorInstanceRef.current) {
+    if (typeof window !== 'undefined' && !editorInstance) {
       initEditor();
     }
     return () => {
-      if (editorInstanceRef.current) {
-        editorInstanceRef.current.destroy();
-        editorInstanceRef.current = null;
+      if (editorInstance) {
+        editorInstance.destroy();
       }
     };
-  }, []);
+  }, [editorInstance]);
 
-  const initEditor = () => {
+  const initEditor = async () => {
+    const EditorJS = (await import('@editorjs/editorjs')).default;
+    const Header = (await import('@editorjs/header')).default;
+    const List = (await import('@editorjs/list')).default;
+    const Image = (await import('@editorjs/image')).default;
+
     let editorData;
     if (typeof initialData === 'string') {
       try {
@@ -100,12 +106,12 @@ const FullScreenEditor = ({ initialData, onSave, saving, onClose, projectId }) =
       placeholder: 'Let\'s write an awesome project description!',
     });
 
-    editorInstanceRef.current = editor;
+    setEditorInstance(editor);
   };
 
   const handleSave = async () => {
-    if (editorInstanceRef.current) {
-      const editorData = await editorInstanceRef.current.save();
+    if (editorInstance) {
+      const editorData = await editorInstance.save();
       console.log('Editor data to be saved:', editorData);
       onSave(editorData);
     }
