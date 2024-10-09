@@ -1,7 +1,7 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
-
-export default async function handler(req, res) {
+import { authMiddleware, ownershipMiddleware, withErrorHandling } from '../../../middleware/authMiddleware';
+export async function handler(req, res) {
   const { username } = req.query;
 
   if (!username) {
@@ -110,6 +110,8 @@ export default async function handler(req, res) {
     res.status(500).json({ error: 'Failed to fetch GitHub contributions', details: error.message });
   }
 }
+
+export default withErrorHandling(handler);
 
 function getColor(level) {
   // GitHub color levels for contributions (2024 color scheme)

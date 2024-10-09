@@ -65,7 +65,7 @@ export default function UserSettingsPage() {
         throw new Error('User ID not found');
       }
   
-      const response = await fetch(`/api/users/${session.user?.username}`, {
+      const response = await fetch(`/api/users/${session.user?.username}?id=${session.user?.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

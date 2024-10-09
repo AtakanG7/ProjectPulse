@@ -1,7 +1,6 @@
 import axios from 'axios';
 import getProjectModel from '../../../../../models/Project';
-
-const Project = getProjectModel();
+import { authMiddleware, ownershipMiddleware, withErrorHandling } from '../../../middleware/authMiddleware';
 
 function mapGithubRepoToProject(repo) {
   return {
@@ -22,7 +21,7 @@ function mapGithubRepoToProject(repo) {
   };
 }
 
-export default async function handler(req, res) {
+export async function handler(req, res) {
   const { username } = req.query;
 
   if (req.method !== 'GET') {
@@ -56,3 +55,5 @@ export default async function handler(req, res) {
     }
   }
 }
+
+export default withErrorHandling((handler));
