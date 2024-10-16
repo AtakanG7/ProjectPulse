@@ -57,7 +57,7 @@ const ImageCarousel = ({ images }) => {
   );
 };
 
-const ProjectCard = ({ project }) => (
+const ProjectCard = ({ project, isReadOnly }) => (
   <div className="bg-white border border-gray-200 rounded-md overflow-hidden">
     <div className="flex flex-col md:flex-row">
       <div className="w-full md:w-1/2">
@@ -109,9 +109,9 @@ const ProjectCard = ({ project }) => (
             )}
           </div>
         </div>
-        <Link href={`/projects/${project._id}`} className="inline-block">
+        <Link href={isReadOnly ? `/${project.title}` : `/projects/${project._id}`} className="inline-block">
           <button className="w-full bg-white text-black border border-black py-2 px-4 rounded-sm text-sm font-normal transition-colors duration-200">
-            Read about the project
+            {isReadOnly ? "View project details" : "Read about the project"}
           </button>
         </Link>
       </div>
@@ -119,7 +119,7 @@ const ProjectCard = ({ project }) => (
   </div>
 );
 
-const ProjectsSection = ({ projects }) => {
+const ProjectsSection = ({ projects, isReadOnly }) => {
   if (!projects || projects.length === 0) {
     return null;
   }
@@ -129,9 +129,18 @@ const ProjectsSection = ({ projects }) => {
       <h2 className="text-2xl font-bold text-gray-900">Projects</h2>
       <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2">
         {projects.map((project) => (
-          <ProjectCard key={project._id} project={project} />
+          <ProjectCard key={project._id} project={project} isReadOnly={isReadOnly} />
         ))}
       </div>
+      {!isReadOnly && (
+        <div className="mt-8 text-center">
+          <Link href="/projects/new">
+            <span className="inline-block bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors duration-200 cursor-pointer">
+              Add New Project
+            </span>
+          </Link>
+        </div>
+      )}
     </div>
   );
 };

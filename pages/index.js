@@ -12,6 +12,7 @@ import About from "./components/Main/About";
 import Footer from "./components/Main/Footer";
 import UpvoteList from "./components/Main/UpvoteList";
 
+
 // Animation variants
 const pageVariants = {
   initial: { opacity: 0, y: 20 },

@@ -145,7 +145,7 @@ export const authOptions = {
           githubId: profile.id?.toString(),
           name: profile.name || profile.login,
           email: user.email,
-          username: profile.login,
+          username: toLowercase(profile.login),
           profilePicture: profile.avatar_url,
           bio: profile.bio || "No bio provided",
           location: profile.location || "No location provided",

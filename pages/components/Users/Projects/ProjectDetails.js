@@ -4,7 +4,7 @@ import Link from 'next/link';
 import ProjectImages from './ProjectImages';
 import EditorJSRenderer from '../../Main/EditorJSRenderer';
 
-export default function ProjectDetails({ project, handleProjectUpdate }) {
+export default function ProjectDetails({ project, handleProjectUpdate, isReadOnly = false }) {
   const [activeTab, setActiveTab] = useState('description');
 
   const TabButton = ({ name, icon: Icon, label }) => (
@@ -24,9 +24,11 @@ export default function ProjectDetails({ project, handleProjectUpdate }) {
         <div className="mb-6">
           <div className="flex justify-between items-center mb-4">
             <h1 className="text-4xl font-bold text-gray-900">{project?.title}</h1>
-            <Link href={`/projects/settings/${project?._id}`} className="text-indigo-600 hover:text-indigo-800">
-              <FaEdit size={24} />
-            </Link>
+            {!isReadOnly && (
+              <Link href={`/projects/settings/${project?._id}`} className="text-indigo-600 hover:text-indigo-800">
+                <FaEdit size={24} />
+              </Link>
+            )}
           </div>
           {project?.projectUrl && (
             <a
@@ -75,7 +77,7 @@ export default function ProjectDetails({ project, handleProjectUpdate }) {
         {/* Likes */}
         <div className="flex items-center mb-8">
           <FaThumbsUp className="text-indigo-600 mr-2" />
-          <span className="text-lg font-semibold text-gray-700">{project?.likesCount} likes</span>
+          <span className="text-lg font-semibold text-gray-700">{project?.likes?.length} likes</span>
         </div>
 
         {/* Tags */}
@@ -93,7 +95,7 @@ export default function ProjectDetails({ project, handleProjectUpdate }) {
           <nav className="-mb-px flex space-x-8" aria-label="Tabs">
             <TabButton name="description" icon={FaEdit} label="Description" />
             <TabButton name="images" icon={FaImage} label="Images" />
-            <TabButton name="details" icon={FaInfoCircle} label="Details" />
+            {!isReadOnly && <TabButton name="details" icon={FaInfoCircle} label="Details" />}
           </nav>
         </div>
 
@@ -110,10 +112,11 @@ export default function ProjectDetails({ project, handleProjectUpdate }) {
               projectId={project?._id}
               images={project?.images || []}
               onUpdate={handleProjectUpdate}
+              isReadOnly={isReadOnly}
             />
           )}
 
-          {activeTab === 'details' && (
+          {activeTab === 'details' && !isReadOnly && (
             <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
               <div className="sm:col-span-1">
                 <dt className="text-sm font-medium text-gray-500">Project ID</dt>
@@ -121,7 +124,7 @@ export default function ProjectDetails({ project, handleProjectUpdate }) {
               </div>
               <div className="sm:col-span-1">
                 <dt className="text-sm font-medium text-gray-500">Created By</dt>
-                <dd className="mt-1 text-sm text-gray-900 flex items-center">
+                <Link href={"/users/" + project?.createdBy?.username || ""} className="mt-1 text-sm text-gray-900 hover:underline text-gray-900 flex items-center">
                   {project?.createdBy?.username}
                   {project?.createdBy?.profilePicture && (
                     <img
@@ -132,7 +135,7 @@ export default function ProjectDetails({ project, handleProjectUpdate }) {
                       className="ml-2 rounded-full"
                     />
                   )}
-                </dd>
+                </Link>
               </div>
               <div className="sm:col-span-1">
                 <dt className="text-sm font-medium text-gray-500">Category</dt>
@@ -140,7 +143,19 @@ export default function ProjectDetails({ project, handleProjectUpdate }) {
               </div>
               <div className="sm:col-span-1">
                 <dt className="text-sm font-medium text-gray-500">Total Likes</dt>
-                <dd className="mt-1 text-sm text-gray-900">{project?.likesCount}</dd>
+                <dd className="mt-1 text-sm text-gray-900">{project?.likes?.length}</dd>
+              </div>
+              <div className="sm:col-span-1">
+                <dt className="text-sm font-medium text-gray-500">Created At</dt>
+                <dd className="mt-1 text-sm text-gray-900">
+                  {new Date(project?.createdAt).toLocaleString()}
+                </dd>
+              </div>
+              <div className="sm:col-span-1">
+                <dt className="text-sm font-medium text-gray-500">Last Updated</dt>
+                <dd className="mt-1 text-sm text-gray-900">
+                  {new Date(project?.updatedAt).toLocaleString()}
+                </dd>
               </div>
             </dl>
           )}

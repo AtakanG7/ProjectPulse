@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Award, Trophy, Medal, ThumbsUp } from 'lucide-react';
 import { toast } from "react-toastify";
+import EditorJSRenderer from './EditorJSRenderer';
 
 const Leaderboard = () => {
   const [leaderboard, setLeaderboard] = useState([]);
@@ -78,16 +79,16 @@ const Leaderboard = () => {
               </div>
               <p className="text-gray-600 mb-4 h-12 overflow-hidden text-sm">
                 {project.description.length > 100 ? (
-                  `${project.description.slice(0, 100)}...`
-                ) : project.description}
+                  `${<EditorJSRenderer data={project.description.slice(0, 100)} />}...`
+                ) : <EditorJSRenderer data={project.description} />}
+
               </p>
               <div className="flex items-center justify-between text-sm">
                 <button
-                  onClick={() => handleLike(project._id, 'like')}
                   className="flex items-center text-blue-600 font-medium hover:text-blue-800 transition-colors"
                 >
                   <ThumbsUp className="mr-1" size={16} />
-                  {project.likes} Likes
+                  {project?.likes?.length} Likes
                 </button>
                 <span className="text-gray-500">
                   created by {project?.createdBy?.username || 'Anonymous'}

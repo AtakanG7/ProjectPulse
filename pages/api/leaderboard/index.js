@@ -3,6 +3,8 @@ import getProjectModel from "../../../models/Project";
 
 const getLeaderboard = async (req, res) => {
   try {
+    await dbConnect();
+    const Project = getProjectModel();
     const projects = await Project.find({})
       .sort({ likes: -1 }) 
       .limit(10)
