@@ -126,7 +126,6 @@ const ProjectsSection = ({ projects, isReadOnly }) => {
 
   return (
     <div className="space-y-8">
-      <h2 className="text-2xl font-bold text-gray-900">Projects</h2>
       <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2">
         {projects.map((project) => (
           <ProjectCard key={project._id} project={project} isReadOnly={isReadOnly} />

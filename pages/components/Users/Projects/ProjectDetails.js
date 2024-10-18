@@ -17,8 +17,42 @@ export default function ProjectDetails({ project, handleProjectUpdate, isReadOnl
               <Link href={`/projects/settings/${project?._id}`} className="text-indigo-600 hover:text-indigo-800">
                 <FaEdit size={24} />
               </Link>
+            )}  
+          </div>
+
+                  {/* Meta Information */}
+        <div className="flex flex-wrap gap-4 mb-8">
+            <div className="flex items-center text-sm text-gray-600">
+              <FaCalendar className="mr-2" />
+              <span>Created: {new Date(project?.createdAt).toLocaleDateString()}</span>
+            </div>
+            <div className="flex items-center text-sm text-gray-600">
+              <FaClock className="mr-2" />
+              <span>Updated: {new Date(project?.updatedAt).toLocaleDateString()}</span>
+            </div>
+            <div className="flex items-center text-sm text-gray-600">
+              <FaUser className="mr-2" />
+              <span>By: {project?.createdBy?.username}</span>
+              {project?.createdBy?.profilePicture && (
+                <img
+                  src={project?.createdBy?.profilePicture}
+                  alt={project?.createdBy?.username}
+                  width={24}
+                  height={24}
+                  className="ml-2 rounded-full"
+                />
+              )}
+
+            </div>
+            {project?.category && (
+              <div className="flex items-center text-sm text-gray-600">
+                <FaFolderOpen className="mr-2" />
+                <span>Category: {project?.category}</span>
+              </div>
             )}
           </div>
+
+
           {project?.projectUrl && (
             <a
               href={project?.projectUrl}
@@ -30,38 +64,7 @@ export default function ProjectDetails({ project, handleProjectUpdate, isReadOnl
               See project
             </a>
           )}
-        </div>
-
-        {/* Meta Information */}
-        <div className="flex flex-wrap gap-4 mb-8">
-          <div className="flex items-center text-sm text-gray-600">
-            <FaCalendar className="mr-2" />
-            <span>Created: {new Date(project?.createdAt).toLocaleDateString()}</span>
-          </div>
-          <div className="flex items-center text-sm text-gray-600">
-            <FaClock className="mr-2" />
-            <span>Updated: {new Date(project?.updatedAt).toLocaleDateString()}</span>
-          </div>
-          <div className="flex items-center text-sm text-gray-600">
-            <FaUser className="mr-2" />
-            <span>By: {project?.createdBy?.username}</span>
-            {project?.createdBy?.profilePicture && (
-              <img
-                src={project?.createdBy?.profilePicture}
-                alt={project?.createdBy?.username}
-                width={24}
-                height={24}
-                className="ml-2 rounded-full"
-              />
-            )}
-          </div>
-          {project?.category && (
-            <div className="flex items-center text-sm text-gray-600">
-              <FaFolderOpen className="mr-2" />
-              <span>Category: {project?.category}</span>
-            </div>
-          )}
-        </div>
+      </div>
 
         {/* Likes */}
         <div className="flex items-center mb-8">
