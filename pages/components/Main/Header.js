@@ -28,7 +28,7 @@ const Header = () => {
       <div className="container mx-auto px-4 py-2 flex items-center justify-between">
         <Link href="/" className="flex items-center">
           <Image src="/img/logo.svg" alt="ProjectPulse Logo" width={32} height={32} />
-          <span className="text-xl font-semibold text-gray-800 ml-2">sprojects.live</span>
+          <span className="text-xl font-semibold text-gray-800 ml-2">ProjectPulse</span>
         </Link>
 
         <div className="flex items-center space-x-4">

@@ -83,7 +83,7 @@ export default function UserProfile() {
               onComplete={() => handleOnboardingComplete()}
             />
           )}
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex justify-between items-center mb-6 mt-6">
             <button
               onClick={handleImportGithub}
               className="flex items-center px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"

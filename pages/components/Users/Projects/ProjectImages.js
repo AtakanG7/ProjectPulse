@@ -124,7 +124,6 @@ const ProjectImages = ({ projectId, images, onUpdate, isReadOnly = false }) => {
   return (
     <div className="container mx-auto px-4 py-8">
       <Toaster position="top-right" />
-      <h1 className="text-3xl font-semibold mb-8 text-gray-900 tracking-wide">Project Gallery</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {images?.map((image, index) => (
           <div

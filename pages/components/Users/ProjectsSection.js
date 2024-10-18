@@ -132,15 +132,6 @@ const ProjectsSection = ({ projects, isReadOnly }) => {
           <ProjectCard key={project._id} project={project} isReadOnly={isReadOnly} />
         ))}
       </div>
-      {!isReadOnly && (
-        <div className="mt-8 text-center">
-          <Link href="/projects/new">
-            <span className="inline-block bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors duration-200 cursor-pointer">
-              Add New Project
-            </span>
-          </Link>
-        </div>
-      )}
     </div>
   );
 };

@@ -42,19 +42,8 @@ async function handleUpload(req, res) {
 
     const Project = getProjectModel();
     const project = await Project.findById(projectId);
-
-    try {
-      await ownershipMiddleware(req, res, project);
-    } catch (error) {
-      if (error.message === 'Forbidden: You don\'t own this resource') {
-        return res.status(403).json({ message: 'Forbidden: You don\'t own this resource' });
-      }
-    }
-
-    if (project.images.length >= 3) {
-      return res.status(400).json({ message: 'Maximum number of images reached' });
-    }
-
+    await ownershipMiddleware(req, res, project);
+  
     const imageUrl = await registerImageToCdn(imageFile[0].filepath);
     await saveImageMetadata(projectId, imageUrl);
 

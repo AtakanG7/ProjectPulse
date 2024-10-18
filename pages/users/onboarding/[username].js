@@ -7,6 +7,20 @@ import DescriptionIllustrate from '../../components/Users/Onboarding/Description
 import LeaderBoard from '../../components/Users/Onboarding/LeaderBoard.js';
 import PersonalizedURLInfo from '../../components/Users/Onboarding/PersonalizedURLInfo.js';
 
+/**
+ * OnboardingPage component allows users to customize their project showcase.
+ * 
+ * This component provides a multi-step onboarding experience where users can:
+ * - Integrate their GitHub account.
+ * - Import projects from GitHub.
+ * - Upload project visuals.
+ * - Add a project description.
+ * - View a leaderboard.
+ * - Set up a personalized showcase URL.
+ * 
+ * The component maintains the current step in the onboarding process using the `activeSection` state,
+ * and allows users to navigate between sections using next and previous controls.
+ */
 const OnboardingPage = () => {
   const [activeSection, setActiveSection] = useState(0);
 
@@ -43,10 +57,18 @@ const OnboardingPage = () => {
     }
   ];
 
+  /**
+   * Sets the active section to the next one in the sequence.
+   * If already on the last section, wraps around to the first section.
+   */
   const nextSection = () => {
     setActiveSection((prev) => (prev + 1) % sections.length);
   };
 
+/**
+ * Sets the active section to the previous one in the sequence.
+ * If already on the first section, wraps around to the last section.
+ */
   const prevSection = () => {
     setActiveSection((prev) => (prev - 1 + sections.length) % sections.length);
   };
@@ -101,6 +123,12 @@ const OnboardingPage = () => {
   );
 };
 
+/**
+ * A component that displays a grid of 3 image upload cards.
+ * The component is designed to be used in the onboarding flow.
+ *
+ * @return {ReactElement}
+ */
 const ProjectImageUpload = () => (
   <div>
     <p className="text-gray-600 mb-6">Enhance your project's visual appeal with up to 3 high-quality images.</p>

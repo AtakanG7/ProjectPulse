@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { FaArrowLeft, FaThumbsUp, FaTag, FaLink, FaCalendar, FaUser, FaClock, FaFolderOpen, FaEdit, FaImage } from 'react-icons/fa';
+import { FaArrowLeft } from 'react-icons/fa';
 import Link from 'next/link';
 import UserHeader from '../components/Users/UserHeader';
 import ProjectDetails from '../components/Users/Projects/ProjectDetails';

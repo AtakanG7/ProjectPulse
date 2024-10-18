@@ -13,7 +13,6 @@ import Footer from "./components/Main/Footer";
 import UpvoteList from "./components/Main/UpvoteList";
 
 
-// Animation variants
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
   in: { opacity: 1, y: 0 },
@@ -26,6 +25,24 @@ const pageTransition = {
   duration: 0.5
 };
 
+
+/**
+ * The main entry point of the application, which displays the landing page.
+ *
+ * This component renders the header, navigation, and main content of the
+ * application. The content is determined by the active tab, which can be
+ * changed by clicking on the navigation links.
+ *
+ * The mobile navigation is handled by the `isMobileNavOpen` state variable,
+ * which is toggled when the user clicks on the "Menu" button. When the mobile
+ * navigation is open, the links are rendered as a list that slides in from the
+ * top of the screen. When the mobile navigation is closed, the links are
+ * rendered as a horizontal navigation bar.
+ *
+ * The desktop navigation is handled by the `activeTab` state variable, which
+ * is changed when the user clicks on one of the navigation links. The links are
+ * rendered as a horizontal navigation bar.
+ */
 export default function Home() {
   const { data: session } = useSession();
   const [activeTab, setActiveTab] = useState('your status');

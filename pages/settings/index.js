@@ -5,6 +5,14 @@ import countryList from 'country-list';
 import Header from '../components/Main/Header';
 import UserHeader from '../components/Users/UserHeader';
 
+/**
+ * Renders the user settings page allowing users to view and update their profile and web settings.
+ * 
+ * This component handles fetching and displaying user settings data, 
+ * managing form inputs for profile and web settings, and submitting updates.
+ * It includes tabs for switching between profile settings and web page settings.
+ * Authentication is required to view this page.
+ */
 export default function UserSettingsPage() {
   const { data: session, status } = useSession();
   const [userSettings, setUserSettings] = useState({
@@ -47,15 +55,30 @@ export default function UserSettingsPage() {
     }
   }, [status, session]);
 
+  /**
+   * Handles input changes in the user settings form by updating the userSettings state.
+   * @param {React.FormEvent<HTMLInputElement>} e - The form event object.
+   */
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setUserSettings((prev) => ({ ...prev, [name]: value }));
   };
 
+/**
+ * Updates the user's location in the userSettings state based on the selected country option.
+ * @param {Object} selectedOption - The selected country option from the dropdown.
+ * @param {string} selectedOption.label - The name of the selected country.
+ */
   const handleCountryChange = (selectedOption) => {
     setUserSettings((prev) => ({ ...prev, location: selectedOption.label }));
   };
 
+  /**
+   * Submits the user settings form and updates the user settings in the backend API.
+   * If the request is successful, updates the userSettings state and displays a success message.
+   * If the request fails, displays an error message.
+   * @param {React.FormEvent<HTMLFormElement>} e - The form event object.
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -96,6 +119,11 @@ export default function UserSettingsPage() {
     </div>
   );
 
+  /**
+   * Renders a form with fields for updating user settings.
+   * @param {Array<Object>} fields - An array of objects containing the field name, label, and value.
+   * @returns {ReactElement} - The rendered form.
+   */
   const renderForm = (fields) => (
     <form onSubmit={handleSubmit} className="space-y-6">
       {fields.map((field) => (

@@ -23,7 +23,7 @@ export default async function handler(req, res) {
     const project = await Project.findOne({
       title: decodeURIComponent(title),
       createdBy: user._id
-    }).select('title description images tags category')
+    })
     .populate("createdBy", "username profilePicture");
 
     if (!project) {

@@ -5,6 +5,12 @@ import UserProfile from '../components/Users/UserProfile';
 import Header from '../components/Main/Header';
 import OnboardingOffer from '../components/Users/Onboarding/OnboardingOffer';
 
+  /**
+   * This component renders the profile page for the currently signed in user.
+   * It will display an onboarding sequence if the user has not completed the
+   * onboarding process yet.
+   * @returns {JSX.Element}
+   */
 export default function ProfilePage() {
   const { data: session, status } = useSession();
   const [user, setUser] = useState(null);
@@ -17,6 +23,12 @@ export default function ProfilePage() {
     }
   }, [session]);
 
+
+
+  /**
+   * Fetches the user data from the backend API.
+   * @returns {Promise<void>}
+   */
   const fetchUserData = async () => {
     try {
       const response = await fetch(`/api/users/${session.user.username}`);
@@ -29,6 +41,11 @@ export default function ProfilePage() {
     }
   };
 
+/**
+ * Handles the completion of onboarding process by saving selected projects.
+ * If saving projects is successful, updates the user's project list and completes onboarding.
+ * If an error occurs while saving projects, logs the error.
+ */
   const handleOnboardingComplete = async (selectedProjects) => {
     try {
       const response = await fetch(`/api/projects/`, {
@@ -53,6 +70,10 @@ export default function ProfilePage() {
     }
   };
 
+  /**
+   * Handles the start of the onboarding process by setting showOnboarding to true.
+   * The onboarding component will be visible when showOnboarding is true.
+   */
   const handleStartTour = () => {
     setShowOnboarding(true);
   };

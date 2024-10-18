@@ -1,21 +1,10 @@
-import React, { useState } from 'react';
-import { FaThumbsUp, FaTag, FaLink, FaCalendar, FaUser, FaClock, FaFolderOpen, FaEdit, FaImage, FaInfoCircle } from 'react-icons/fa';
+import React from 'react';
+import { FaThumbsUp, FaTag, FaLink, FaCalendar, FaUser, FaClock, FaFolderOpen, FaEdit } from 'react-icons/fa';
 import Link from 'next/link';
 import ProjectImages from './ProjectImages';
 import EditorJSRenderer from '../../Main/EditorJSRenderer';
 
 export default function ProjectDetails({ project, handleProjectUpdate, isReadOnly = false }) {
-  const [activeTab, setActiveTab] = useState('description');
-
-  const TabButton = ({ name, icon: Icon, label }) => (
-    <button
-      className={`flex items-center px-4 py-2 ${activeTab === name ? 'bg-indigo-600 text-white' : 'bg-white text-gray-700'} rounded-t-lg transition-colors duration-200`}
-      onClick={() => setActiveTab(name)}
-    >
-      <Icon className="mr-2" />
-      {label}
-    </button>
-  );
 
   return (
     <div className="bg-white shadow-lg rounded-lg overflow-hidden">
@@ -90,33 +79,33 @@ export default function ProjectDetails({ project, handleProjectUpdate, isReadOnl
           ))}
         </div>
 
-        {/* Tabs */}
-        <div className="mb-4 border-b border-gray-200">
-          <nav className="-mb-px flex space-x-8" aria-label="Tabs">
-            <TabButton name="description" icon={FaEdit} label="Description" />
-            <TabButton name="images" icon={FaImage} label="Images" />
-            {!isReadOnly && <TabButton name="details" icon={FaInfoCircle} label="Details" />}
-          </nav>
-        </div>
-
-        {/* Tab Content */}
-        <div className="mt-8">
-          {activeTab === 'description' && (
-            <div className="text-gray-700 leading-relaxed">
-              <EditorJSRenderer data={project?.description} />
-            </div>
-          )}
-
-          {activeTab === 'images' && (
+        {/* Project Images */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Project Gallery</h2>
+          {project?.images?.length ? (
             <ProjectImages
               projectId={project?._id}
-              images={project?.images || []}
+              images={project?.images}
               onUpdate={handleProjectUpdate}
               isReadOnly={isReadOnly}
             />
+          ) : (
+            <p className="text-center text-sm text-gray-500">No content available.</p>
           )}
+        </div>
+        
+        {/* Description */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Description</h2>
+          <div className="text-gray-700 leading-relaxed">
+            <EditorJSRenderer data={project?.description} />
+          </div>
+        </div>
 
-          {activeTab === 'details' && !isReadOnly && (
+        {/* Details (only if not read-only) */}
+        {!isReadOnly && (
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Project Details</h2>
             <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
               <div className="sm:col-span-1">
                 <dt className="text-sm font-medium text-gray-500">Project ID</dt>
@@ -158,8 +147,8 @@ export default function ProjectDetails({ project, handleProjectUpdate, isReadOnl
                 </dd>
               </div>
             </dl>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

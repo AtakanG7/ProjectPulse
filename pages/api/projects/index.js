@@ -53,8 +53,7 @@ const getProjects = async (req, res) => {
 };
 
 const createProjects = async (req, res) => {
-  const session = await getServerSession(req, res, authOptions);
-  if (!session) return res.status(401).json({ error: "Unauthorized" });
+  await authMiddleware(req, res);
   
   try {
     const projects = Array.isArray(req.body.projects) ? req.body.projects : [req.body.projects];
@@ -71,7 +70,6 @@ const createProjects = async (req, res) => {
         imageUrl,
         projectUrl
       });
-      console.log("Project created:", newProject);
       return newProject;
     }));
 
@@ -84,8 +82,7 @@ const createProjects = async (req, res) => {
 };
 
 const updateProject = async (req, res) => {
-  const session = await getServerSession(req, res, authOptions);
-  if (!session) return res.status(401).json({ error: "Unauthorized" });
+  await authMiddleware(req, res);
 
   const { id } = req.query;
   const { title, description, tags, category, imageUrl, projectUrl } = req.body;
@@ -102,9 +99,8 @@ const updateProject = async (req, res) => {
 };
 
 const deleteProject = async (req, res) => {
-  const session = await getServerSession(req, res, authOptions);
-  if (!session) return res.status(401).json({ error: "Unauthorized" });
-
+  await authMiddleware(req, res);
+  await ownershipMiddleware(req, res);
   const { id } = req.query;
 
   try {
@@ -120,7 +116,7 @@ const deleteProject = async (req, res) => {
   }
 };
 
-export async function handler(req, res) {
+export default async function handler(req, res) {
   await dbConnect();
 
   switch (req.method) {
@@ -141,4 +137,3 @@ export async function handler(req, res) {
   }
 }
 
-export default withErrorHandling(handler);

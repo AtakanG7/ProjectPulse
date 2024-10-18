@@ -3,6 +3,7 @@ import getProjectModel from "../../../models/Project";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]";
 import { authMiddleware, ownershipMiddleware, withErrorHandling } from "../middleware/authMiddleware";
+import getUserModel from "../../../models/User";
 
 const getProject = async (req, res) => {
   const { id } = req.query;
@@ -71,19 +72,14 @@ const deleteProject = async (req, res) => {
     await dbConnect();
     const Project = getProjectModel();
     const projectObj = await Project.findById(id);
+    console.log(id)
+    console.log(projectObj)
     if (!projectObj) return res.status(404).json({ error: "Project not found or unauthorized" });
-    try {
-      await ownershipMiddleware(req, res, projectObj);
-    } catch (error) {
-      if (error.message === 'Forbidden: You don\'t own this resource') {
-        return res.status(403).json({ message: 'Forbidden: You don\'t own this resource' });
-      }
-    }
+    await ownershipMiddleware(req, res, projectObj);
     const project = await Project.findOneAndDelete({ _id: id, createdBy: session.user.id });
-    if (!project) return res.status(404).json({ error: "Project not found or unauthorized" });
-
+    await dbConnect();
+    const User = getUserModel();
     await User.findByIdAndUpdate(session.user.id, { $pull: { projects: id } });
-
     res.status(200).json({ message: "Project deleted successfully" });
   } catch (error) {
     console.error("Error in DELETE handler:", error);

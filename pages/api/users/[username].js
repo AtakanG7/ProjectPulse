@@ -1,8 +1,11 @@
 import dbConnect from "../../../utils/dbConnect";
 import getUserModel from "../../../models/User";
+import getProjectModel from "../../../models/Project";
 import { authMiddleware, ownershipMiddleware, withErrorHandling } from "../middleware/authMiddleware";
 const getUser = async (req, res) => {
   try {
+    await dbConnect();
+    getProjectModel();
     const user = await getUserModel().findOne({ username: new RegExp(`^${req.query.username}$`, "i") }).populate("projects"); 
         
     if (!user) {
@@ -17,10 +20,10 @@ const getUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
   try {
-    console.log(req.query)
+    await dbConnect();
     const { id } = req.query;
     const { name, email, username, profilePicture, bio, location, website, githubLink, linkedinUrl, officialWebsiteUrl } = req.body;
-    const userModel = await getUserModel()
+    const userModel = getUserModel()
     const userobj = await userModel.findById(id);
     if (!userobj) return res.status(404).json({ error: "User not found" });
     try {

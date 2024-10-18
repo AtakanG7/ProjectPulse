@@ -130,9 +130,9 @@ const EditorJSRenderer = ({ data }) => {
 
   return (
     <div className="prose max-w-none lg:prose-xl">
-      <div className="container mx-auto px-4 lg:px-0 space-y-12">
+      <div className="container mx-auto px-4 lg:px-0 space-y-6">
         {parsedData.blocks.map((block, index) => (
-          <div key={index} className="bg-white rounded-lg shadow-lg p-6 md:p-8">
+          <div key={index}>
             {renderBlock(block)}
           </div>
         ))}
