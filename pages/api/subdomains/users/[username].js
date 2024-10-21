@@ -16,7 +16,7 @@ export default async function handler(req, res) {
 
   try {
     const user = await User.findOne({ username })
-      .select('name username bio profilePicture location website githubLink linkedinUrl officialWebsiteUrl followers following likes')
+      .select('name username bio profilePicture location website githubLink linkedinUrl officialWebsiteUrl followers following likes creator')
       .populate({
         path: 'projects',
         select: 'title description images tags category likesCount createdAt updatedAt projectUrl'

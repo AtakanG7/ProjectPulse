@@ -53,6 +53,7 @@ const getProjects = async (req, res) => {
 };
 
 const createProjects = async (req, res) => {
+  const session = await getServerSession(req, res, authOptions);
   await authMiddleware(req, res);
   
   try {
@@ -73,10 +74,10 @@ const createProjects = async (req, res) => {
       return newProject;
     }));
 
-    await User.findByIdAndUpdate(userId, { $push: { projects: { $each: results.map(project => project._id) } } });
-
+    await User.findByIdAndUpdate((userId), { $push: { projects: { $each: results.map(project => project._id) } } });
     res.status(201).json({ data: results });
   } catch (error) {
+    console.error("Error in POST handler:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -99,6 +100,7 @@ const updateProject = async (req, res) => {
 };
 
 const deleteProject = async (req, res) => {
+  const session = await getServerSession(req, res, authOptions);
   await authMiddleware(req, res);
   await ownershipMiddleware(req, res);
   const { id } = req.query;

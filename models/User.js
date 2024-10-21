@@ -5,6 +5,7 @@ const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   username: { type: String, required: true, unique: true },
+  creator: { type: Boolean, default: false},
   profilePicture: { type: String, default: "default-profile.jpg" },
   bio: { type: String, maxlength: 500 },
   location: { type: String },

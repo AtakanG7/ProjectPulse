@@ -1,25 +1,67 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 
 const GitHubContributionGraph = ({ username }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [svgContent, setSvgContent] = useState('');
+  const containerRef = useRef(null);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
   useEffect(() => {
-    setIsLoading(true);
-    fetch(`/api/users/github/contributions/${username}`)
-      .then(response => response.text())
-      .then(data => {
+    const fetchAndSaveGraph = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch(`/api/users/github/contributions/${username}`);
+        const data = await response.text();
+        setSvgContent(data);
+        localStorage.setItem('githubGraph', JSON.stringify({
+          username,
+          svg: data,
+          timestamp: Date.now()
+        }));
         setIsLoading(false);
-      })
-      .catch(error => {
+      } catch (error) {
         console.error('Error fetching GitHub contributions:', error);
         setIsLoading(false);
-      });
+      }
+    };
+
+    const storedData = localStorage.getItem('githubGraph');
+    if (storedData) {
+      const { username: storedUsername, svg, timestamp } = JSON.parse(storedData);
+      const oneDayInMs = 24 * 60 * 60 * 1000;
+      if (username === storedUsername && Date.now() - timestamp < oneDayInMs) {
+        setSvgContent(svg);
+        setIsLoading(false);
+      } else {
+        fetchAndSaveGraph();
+      }
+    } else {
+      fetchAndSaveGraph();
+    }
   }, [username]);
+
+  useEffect(() => {
+    const resizeSVG = () => {
+      if (containerRef.current) {
+        const svg = containerRef.current.querySelector('svg');
+        if (svg) {
+          const aspectRatio = svg.viewBox.baseVal.width / svg.viewBox.baseVal.height;
+          const containerWidth = containerRef.current.offsetWidth;
+          const newHeight = containerWidth / aspectRatio;
+          svg.style.width = '100%';
+          svg.style.height = `${newHeight}px`;
+        }
+      }
+    };
+
+    resizeSVG();
+    window.addEventListener('resize', resizeSVG);
+    return () => window.removeEventListener('resize', resizeSVG);
+  }, [svgContent]);
 
   const renderSkeleton = () => (
     <svg width="100%" height="100%" viewBox="0 0 722 112" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
@@ -30,7 +72,6 @@ const GitHubContributionGraph = ({ username }) => {
           .day-label { font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji"; font-size: 9px; fill: #7e7e7e; }
         `}
       </style>
-      {/* Month labels */}
       {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map((month, index) => (
         <text 
           key={month}
@@ -44,11 +85,9 @@ const GitHubContributionGraph = ({ username }) => {
           {month}
         </text>
       ))}
-      {/* Day labels */}
       {['', 'Mon', '', 'Wed', '', 'Fri', ''].map((day, index) => (
         day && <text key={day} x="0" y={index * 13 + 35} className="day-label" textAnchor="start">{day}</text>
       ))}
-      {/* Contribution cells */}
       {[...Array(53)].map((_, week) => (
         [...Array(7)].map((_, day) => {
           const opacity = Math.random() * 0.15;
@@ -76,19 +115,19 @@ const GitHubContributionGraph = ({ username }) => {
     return (
       <>
         <div 
-          className="w-full h-[200px] md:h-auto md:max-h-[400px] cursor-pointer overflow-hidden"
+          ref={containerRef}
+          className="w-full cursor-pointer overflow-hidden"
           onClick={openModal}
         >
-          <img 
-            src={`/api/users/github/contributions/${username}`} 
-            alt={`${username}'s GitHub contributions`}
-            className="w-full h-full object-cover md:object-contain"
+          <div 
+            dangerouslySetInnerHTML={{ __html: svgContent }} 
+            className="w-full"
           />
         </div>
   
         {isModalOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-lg shadow-xl max-w-6xl w-full max-h-screen overflow-auto">
+            <div className="bg-white rounded-lg shadow-xl w-full h-full max-h-screen overflow-auto">
               <div className="flex justify-end p-2">
                 <button 
                   onClick={closeModal}
@@ -98,11 +137,10 @@ const GitHubContributionGraph = ({ username }) => {
                   <X size={24} />
                 </button>
               </div>
-              <div className="p-4">
-                <img 
-                  src={`/api/users/github/contributions/${username}`} 
-                  alt={`${username}'s GitHub contributions`}
-                  className="w-full h-auto"
+              <div className="p-4 h-full flex items-center justify-center">
+                <div 
+                  dangerouslySetInnerHTML={{ __html: svgContent }} 
+                  className="w-full"
                 />
               </div>
             </div>
