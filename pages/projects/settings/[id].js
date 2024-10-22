@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { useSession } from "next-auth/react";
 import dynamic from 'next/dynamic';
 import Header from '../../components/Main/Header';
 import DeleteProjectModal from '../../components/Users/DeleteProjectModal';
@@ -8,12 +9,13 @@ import EditorJSRenderer from '../../components/Main/EditorJSRenderer';
 import toast, { Toaster } from 'react-hot-toast';
 import { FiAlertTriangle, FiLink, FiTag, FiFolder, FiArrowLeft } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
-import { parse } from 'path';
+import { setTimeout } from 'timers';
 
 const FullScreenEditor = dynamic(() => import('../../components/Main/FullScreenEditor'), { ssr: false });
 
 const ProjectSettingsPage = () => {
   const router = useRouter();
+  const { data: session } = useSession();
   const { id } = router.query;
   const [project, setProject] = useState(null);
   const [error, setError] = useState(null);
@@ -112,7 +114,7 @@ const ProjectSettingsPage = () => {
       const res = await fetch(`/api/projects/${id}`, { method: 'DELETE' });
       if (!res.ok) throw new Error(`Failed to delete project: ${res.status} ${res.statusText}`);
       toast.success('Project deleted successfully');
-      router.push('/projects');
+      setTimeout(() => router.push(`/users/${session?.user?.username}`), 2000);
     } catch (err) {
       console.error('Error deleting project:', err);
       toast.error(err.message);

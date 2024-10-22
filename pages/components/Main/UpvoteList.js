@@ -178,7 +178,7 @@ const UpvoteList = () => {
               <div className="flex items-start justify-between">
                 <div className="flex-grow pr-4">
                   <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                    <Link href={`/projects/${project._id}`}>
+                  <Link href={`https://${project?.createdBy?.username}.sprojects.live/${project?.title}`}>
                       <span className="hover:text-indigo-600 transition-colors duration-200">{project.title}</span>
                     </Link>
                   </h3>
@@ -191,7 +191,7 @@ const UpvoteList = () => {
                     <span className="text-gray-500">
                       by {project.createdBy?.username || 'Anonymous'}
                     </span>
-                    <Link href={`/projects/${project._id}`}>
+                    <Link href={`https://${project?.createdBy?.username}.sprojects.live/${project?.title}`}>
                       <span className="text-indigo-600 hover:text-indigo-800 font-medium">
                         View Project
                       </span>

@@ -59,7 +59,7 @@ const createProjects = async (req, res) => {
   try {
     const projects = Array.isArray(req.body.projects) ? req.body.projects : [req.body.projects];
     const userId = session.user.id;
-
+    console.log(projects)
     const results = await Promise.all(projects.map(async (project) => {
       const { title, description, tags, category, imageUrl, projectUrl } = project;
       const newProject = await Project.create({ 

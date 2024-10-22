@@ -112,7 +112,7 @@ const SearchSection = () => {
                       </div>
                     </div>
                     <div className="flex-grow">
-                      <Link href={`/users/${result.username}`} passHref>
+                      <Link href={`https://${result.username}.sprojects.live`} passHref>
                         <span className="text-xl font-semibold text-indigo-700 hover:text-indigo-500 cursor-pointer transition duration-150 ease-in-out">
                           {result.name}
                         </span>

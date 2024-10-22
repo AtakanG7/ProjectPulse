@@ -80,7 +80,7 @@ export default function UserProfile() {
           {showOnboarding && (
             <ProfileOnboarding
               username={user?.username}
-              onComplete={() => handleOnboardingComplete()}
+              onComplete={handleOnboardingComplete}
             />
           )}
           <div className="flex justify-between items-center mb-6 mt-6">
