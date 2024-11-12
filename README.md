@@ -21,6 +21,6 @@ This is a simple project gallery. You can add your projects here and share the l
 5. You will be redirected to your project's page
 6. You can share the link to your project's page to anyone
 
-## Demo
+## LIVE
 
-You can see a demo of this project [here]([https://project-gallery.vercel.app/](https://projection-4wrw.onrender.com/)).
+www.sprojects.live/
